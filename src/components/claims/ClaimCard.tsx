@@ -1,6 +1,6 @@
 import Link from "next/link";
 import StatusTag from "../ui/StatusTag";
-import { SyncIcon } from "@heroicons/react/24/outline";
+import { ArrowPathIcon } from "@heroicons/react/24/outline";
 
 interface ClaimCardProps {
   claimId: string;
@@ -27,7 +27,7 @@ export default function ClaimCard({
         return { 
           type: "pending" as const, 
           label: "Pending", 
-          icon: <SyncIcon className="h-3 w-3" /> 
+          icon: <ArrowPathIcon className="h-3 w-3" /> 
         };
       case "approved":
         return { 
@@ -45,13 +45,13 @@ export default function ClaimCard({
         return { 
           type: "warning" as const, 
           label: "Processing", 
-          icon: <SyncIcon className="h-3 w-3" /> 
+          icon: <ArrowPathIcon className="h-3 w-3" /> 
         };
       default:
         return { 
           type: "pending" as const, 
           label: "Pending", 
-          icon: <SyncIcon className="h-3 w-3" /> 
+          icon: <ArrowPathIcon className="h-3 w-3" /> 
         };
     }
   };
