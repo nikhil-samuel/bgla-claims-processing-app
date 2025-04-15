@@ -4,43 +4,79 @@ A Next.js application for BGLA (Blue Green Life Assurance) insurance claims proc
 
 ## Overview
 
-This application provides a user interface for processing insurance claims for BGLA. The application allows users to view, submit, and track insurance claims through a streamlined process.
+This application provides a user interface for processing insurance claims for BGLA. It follows design specifications from Figma wireframes to create a consistent and user-friendly experience for managing insurance claims.
 
 ## Features
 
-- Claims dashboard overview
-- New claim submission
-- Claim status tracking
+- Claims dashboard with statistics and recent claims
+- Pending claims queue for quick access to waiting claims
+- New claim submission through guided multi-step form
+- Detailed claim status tracking
 - Document uploading and management
-- Form validation
-- User notifications
+- Form validation with visual feedback
+- Status indicators for claim progress
+- Responsive design that works on mobile and desktop
 
 ## User Paths
 
 The application supports the following primary user paths:
 
-1. **New Claim Submission**
-   - User logs in and navigates to the dashboard
-   - User clicks "Submit New Claim" to start the process
-   - User completes the three-step form:
-     - Step 1: Enter claim details (type, policy number, patient info, provider, amount)
-     - Step 2: Upload supporting documents
-     - Step 3: Review and submit the claim
-   - User receives confirmation of successful submission
+### 1. Dashboard Overview
+   - View key statistics (total claims, in progress, approved, requires attention)
+   - See pending claims in a card-based queue view
+   - Access recent claims in a tabular format
+   - Quick links to common actions
 
-2. **Claim Status Tracking**
-   - User logs in and navigates to the dashboard to see recent claims
-   - User can view all claims by clicking "Claims" in the navigation
-   - User selects a specific claim to view its detailed status
-   - User can track the claim's progress through the timeline tab
-   - User can communicate with BGLA through the messages tab
+### 2. Claims Queue View
+   - View all pending claims requiring attention
+   - Filter claims by various criteria
+   - See claim metadata (patient, type, amount)
+   - Status indicators to show processing state
 
-3. **Document Management**
-   - User navigates to "Documents" section
-   - User can view all previously uploaded documents
-   - User can upload new documents by clicking "Upload Document"
-   - User associates documents with specific claims
-   - User can download or delete existing documents
+### 3. New Claim Submission
+   - Multi-step form with clear progress indication:
+     - Step 1: Policy & Member information (pre-populated from system)
+     - Step 2: Claim details (type, dates, medical information)
+     - Step 3: Review and submit
+   - Form validation with immediate feedback
+   - Document upload capabilities
+   - Success confirmation after submission
+
+### 4. Claim Details
+   - View all information about a specific claim
+   - Track claim status through visual timeline
+   - Access uploaded documents
+   - Exchange messages with administrators
+   - See information organized in tabs for easy navigation
+
+### 5. Document Management
+   - Upload and organize claim-related documents
+   - Associate documents with specific claims
+   - View and download existing documents
+
+## Design System
+
+The application implements a design system based on the Figma wireframes with:
+
+- **Colors**: 
+  - Primary blue (#1677FF) for key actions and active states
+  - Success green (#52C41A) for approved status
+  - Warning amber (#FAAD14) for pending status
+  - Error red (#FF4D4F) for rejected status
+  - Neutral grays for text hierarchy
+
+- **Components**:
+  - Status tags with icons for claim states
+  - Form fields with validation states (success/error)
+  - Collapsible section cards for organizing forms
+  - Claim cards for consistent display in queues
+  - Multi-step form progress indicators
+
+- **Patterns**:
+  - Consistent feedback for user actions
+  - Progressive disclosure for complex forms
+  - Card-based interfaces for summarizing information
+  - Tabbed interfaces for organizing detailed content
 
 ## Technology Stack
 
@@ -51,17 +87,9 @@ The application supports the following primary user paths:
   - Tailwind CSS for styling
   - Headless UI for accessible components
   - React Hook Form for form handling
-  - Heroicons for icons
+  - Heroicons for consistent iconography
 
-- **Features**:
-  - Responsive design
-  - Form validation
-  - Multi-step forms
-  - File uploads
-  - Dynamic routing
-  - Interactive UI components
-
-## Installation and Setup
+## Getting Started
 
 1. **Clone the repository**:
    ```bash
@@ -81,50 +109,58 @@ The application supports the following primary user paths:
 
 4. **Open [http://localhost:3000](http://localhost:3000) in your browser**
 
-## Build for Production
-
-To build the application for production deployment:
-
-```bash
-npm run build
-npm run start
-```
-
 ## Project Structure
 
 ```
 bgla-claims-processing-app/
 ├── src/
-│   ├── app/                     # Next.js app router
-│   │   ├── claims/              # Claims pages
-│   │   │   ├── [id]/            # Individual claim details
-│   │   │   ├── new/             # New claim submission
+│   ├── app/                      # Next.js app router
+│   │   ├── claims/               # Claims pages
+│   │   │   ├── [id]/             # Individual claim details
+│   │   │   ├── new/              # New claim submission
 │   │   │   └── submission-successful/ # Claim success page
-│   │   ├── dashboard/           # Dashboard page
-│   │   ├── documents/           # Documents management
-│   │   │   └── upload/          # Document upload page
-│   │   ├── globals.css          # Global styles
-│   │   ├── layout.tsx           # Root layout
-│   │   └── page.tsx             # Login page
+│   │   ├── dashboard/            # Dashboard page
+│   │   ├── documents/            # Documents management
+│   │   │   └── upload/           # Document upload page
+│   │   ├── globals.css           # Global styles
+│   │   ├── layout.tsx            # Root layout
+│   │   └── page.tsx              # Login page
 │   │
-│   ├── components/              # Reusable components
-│   │   ├── Layout/              # Layout components
-│   │   │   ├── AppHeader.tsx    # Application header
-│   │   │   └── AppLayout.tsx    # Main application layout
-│   │   └── SignInForm.tsx       # Login form component
+│   ├── components/               # Reusable components
+│   │   ├── Layout/               # Layout components
+│   │   │   ├── AppHeader.tsx     # (Deprecated) Application header 
+│   │   │   ├── AppLayout.tsx     # Main application layout
+│   │   │   └── AppSidebar.tsx    # Sidebar navigation
+│   │   ├── claims/               # Claim-specific components
+│   │   │   └── ClaimCard.tsx     # Card component for claims
+│   │   ├── ui/                   # Shared UI components
+│   │   │   ├── FormField.tsx     # Form field with validation
+│   │   │   ├── SectionCard.tsx   # Collapsible section container
+│   │   │   └── StatusTag.tsx     # Status indicator tags
+│   │   └── SignInForm.tsx        # Login form component
 │   │
-│   └── lib/                     # Utility functions and helpers
+│   └── lib/                      # Utility functions and helpers
 │
-├── public/                      # Static assets
+├── public/                       # Static assets
 │
-├── .gitignore                   # Git ignore file
-├── next.config.js               # Next.js configuration
-├── package.json                 # Dependencies and scripts
-├── postcss.config.js            # PostCSS configuration
-├── tailwind.config.js           # Tailwind CSS configuration
-├── tsconfig.json                # TypeScript configuration
-└── README.md                    # Project documentation
+├── .gitignore                    # Git ignore file
+├── next.config.js                # Next.js configuration
+├── package.json                  # Dependencies and scripts
+├── postcss.config.js             # PostCSS configuration
+├── tailwind.config.js            # Tailwind CSS configuration
+├── tsconfig.json                 # TypeScript configuration
+└── README.md                     # Project documentation
 ```
+
+## Figma Design Implementation
+
+The application has been developed to closely match the Figma wireframes provided in the "Claims Processing Wireframes" file. Key aspects of the implementation include:
+
+- **Layout Structure**: The sidebar navigation, headers, and content areas follow the Figma layout specifications.
+- **Component Design**: UI components like status tags, form fields, and cards are built to match the Figma components.
+- **Color Scheme**: The color palette has been extracted from the Figma design and implemented in Tailwind CSS.
+- **Typography**: Text styles for headers, labels, and content match the Figma specifications.
+- **Spacing**: Padding, margins, and layout spacing follow the Figma design system.
 
 ## Usage Notes
 
@@ -146,11 +182,12 @@ This is a frontend prototype without backend integration. Data is not persisted 
 
 ## Future Enhancements
 
-- Backend API integration
-- Real-time notifications
-- Enhanced document preview
-- Advanced search and filtering
-- Role-based access control (admin, user, provider)
+- Backend API integration with real data persistence
+- Real-time notifications for claim status changes
+- Enhanced document preview and management
+- Advanced search and filtering for claims
+- Administrator interface for processing claims
+- Mobile app version for on-the-go access
 
 ## License
 
