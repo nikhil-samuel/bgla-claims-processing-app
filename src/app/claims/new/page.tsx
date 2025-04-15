@@ -12,7 +12,7 @@ import {
   CalendarIcon, 
   CheckIcon,
   XMarkIcon,
-  SyncIcon  
+  ArrowPathIcon  
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 
@@ -543,7 +543,7 @@ export default function NewClaim() {
               <div className="bg-gray-50 p-6 rounded-lg border border-gray-200 mb-6">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="font-medium text-lg">Claim Summary</h3>
-                  <StatusTag status="pending" icon={<SyncIcon className="h-3 w-3" />}>
+                  <StatusTag status="pending" icon={<ArrowPathIcon className="h-3 w-3" />}>
                     Draft
                   </StatusTag>
                 </div>
