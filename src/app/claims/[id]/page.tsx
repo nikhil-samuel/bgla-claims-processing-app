@@ -13,10 +13,8 @@ import {
   DocumentMagnifyingGlassIcon,
   ArrowUturnLeftIcon,
   ClockIcon,
+  ArrowLeftIcon,
 } from "@heroicons/react/24/outline";
-
-// Import our utility functions
-import { formatDate, formatCurrency } from "@/utils/formatters";
 
 // Example of real claim data that might come from the dashboard
 const claimData = {
@@ -232,19 +230,24 @@ export default function ClaimDetails({ params }: { params: { id: string } }) {
 
   return (
     <AppLayout>
-      <div className="flex flex-col h-full">
-        {/* Header with breadcrumbs */}
-        <div className="mb-4">
-          <div className="text-sm text-gray-500 mb-2">
-            <Link href="/claims" className="hover:text-blue-500">Claims Queue</Link> / 
-            <span className="mx-1">Claim {claimData.id}</span>
-          </div>
+      <div className="flex flex-col h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Simple header with back button */}
+        <div className="mb-6">
+          <Link href="/claims" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700">
+            <ArrowLeftIcon className="h-4 w-4 mr-1" />
+            Back to Claims
+          </Link>
           
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-semibold text-gray-900">Claim {claimData.id}</h1>
+          <div className="mt-4 flex justify-between items-center">
+            <h1 className="text-xl font-semibold text-gray-900">Claim {claimId}</h1>
             <div className="flex items-center space-x-2">
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                <ClockIcon className="h-3 w-3 mr-1" /> {claimData.status}
+              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                claimData.status === 'Approved' ? 'bg-green-100 text-green-800' :
+                claimData.status === 'Denied' ? 'bg-red-100 text-red-800' :
+                claimData.status === 'In Review' ? 'bg-blue-100 text-blue-800' :
+                'bg-yellow-100 text-yellow-800'
+              }`}>
+                {claimData.status}
               </span>
               <button 
                 onClick={toggleDocumentPanel}
