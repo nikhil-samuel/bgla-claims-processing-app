@@ -1,259 +1,173 @@
+"use client";
+
 import AppLayout from "@/components/Layout/AppLayout";
-import ClaimCard from "@/components/claims/ClaimCard";
-import StatusTag from "@/components/ui/StatusTag";
-import { AdjustmentsHorizontalIcon, PlusIcon, ChevronRightIcon, ChevronLeftIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { useState } from "react";
+import { MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { formatDate } from "@/utils/formatters";
 
-// Mock data for claims list
-const pendingClaims = [
+// Mock claim data
+const mockClaims = [
   {
-    id: "CL-2025-1234",
-    patientName: "Somchai Jaidee",
-    policyNumber: "THB9876543",
-    type: "OPD Claim",
-    amount: "$400.00",
-    status: "pending",
+    id: "CLM-23456-789",
+    status: "Pending",
+    submissionDate: "2025-03-15T14:30:00Z",
+    memberName: "John Smith",
+    memberID: "MEM-12345",
+    provider: "City Hospital Medical Center",
+    serviceDate: "2025-03-10T09:15:00Z",
+    amount: 160.50
   },
   {
-    id: "CL-2025-1233",
-    patientName: "Maria Gonzalez",
-    policyNumber: "THB1234567",
-    type: "OPD Claim",
-    amount: "$650.00",
-    status: "pending",
+    id: "CLM-23456-790",
+    status: "In Review",
+    submissionDate: "2025-03-14T10:15:00Z",
+    memberName: "Sarah Johnson",
+    memberID: "MEM-12346",
+    provider: "Westside Medical Group",
+    serviceDate: "2025-03-09T14:30:00Z",
+    amount: 275.20
   },
   {
-    id: "CL-2025-1232",
-    patientName: "Liam O'Sullivan",
-    policyNumber: "THB2345678",
-    type: "OPD Claim",
-    amount: "$720.00",
-    status: "pending",
+    id: "CLM-23456-791",
+    status: "Approved",
+    submissionDate: "2025-03-13T09:45:00Z",
+    memberName: "Robert Williams",
+    memberID: "MEM-12347",
+    provider: "Downtown Health Clinic",
+    serviceDate: "2025-03-08T11:00:00Z",
+    amount: 425.75
   },
   {
-    id: "CL-2025-1231",
-    patientName: "Priya Singh",
-    policyNumber: "THB4567890",
-    type: "OPD Claim",
-    amount: "$850.00",
-    status: "pending",
+    id: "CLM-23456-792",
+    status: "Denied",
+    submissionDate: "2025-03-12T16:20:00Z",
+    memberName: "Maria Garcia",
+    memberID: "MEM-12348",
+    provider: "Northside Hospital",
+    serviceDate: "2025-03-07T13:45:00Z",
+    amount: 1250.00
   },
   {
-    id: "CL-2025-1230",
-    patientName: "David Brown",
-    policyNumber: "THB5678901",
-    type: "OPD Claim",
-    amount: "$300.00",
-    status: "pending",
-  },
-  {
-    id: "CL-2025-1229",
-    patientName: "Chen Wei",
-    policyNumber: "THB6789012",
-    type: "OPD Claim",
-    amount: "$600.00",
-    status: "pending",
-  },
+    id: "CLM-23456-793",
+    status: "Pending",
+    submissionDate: "2025-03-11T11:30:00Z",
+    memberName: "David Lee",
+    memberID: "MEM-12349",
+    provider: "Eastside Medical Center",
+    serviceDate: "2025-03-06T10:30:00Z",
+    amount: 85.30
+  }
 ];
 
-const recentClaims = [
-  {
-    id: "CL-2025-1228",
-    patientName: "Nia Abdalla",
-    policyNumber: "THB8901234",
-    type: "Medical",
-    provider: "City Hospital",
-    submittedDate: "March 15, 2025",
-    amount: "$550.00",
-    status: "approved",
-  },
-  {
-    id: "CL-2025-1227",
-    patientName: "Raj Patel",
-    policyNumber: "THB8901234",
-    type: "Physical Therapy",
-    provider: "Recovery Therapy Center",
-    submittedDate: "March 10, 2025",
-    amount: "$700.00",
-    status: "approved",
-  },
-  {
-    id: "CL-2025-1226",
-    patientName: "Sophia Rodriguez",
-    policyNumber: "THB9012345",
-    type: "Vision",
-    provider: "Clear Vision Center",
-    submittedDate: "March 5, 2025",
-    amount: "$275.00",
-    status: "rejected",
-  },
-  {
-    id: "CL-2025-1225",
-    patientName: "Ethan Clark",
-    policyNumber: "THB0123456",
-    type: "Pharmacy",
-    provider: "Health Pharmacy",
-    submittedDate: "February 28, 2025",
-    amount: "$125.00",
-    status: "approved",
-  },
-];
-
-export default function Claims() {
+export default function ClaimsPage() {
+  const [searchTerm, setSearchTerm] = useState("");
+  
+  const filteredClaims = mockClaims.filter(claim => 
+    claim.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    claim.memberName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    claim.memberID.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    claim.provider.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
   return (
     <AppLayout>
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-neutral">Claims Queue</h1>
-          <p className="text-neutral-secondary">View and manage your insurance claims</p>
-        </div>
-        <div className="mt-4 sm:mt-0 flex space-x-3">
-          <button className="flex items-center btn-secondary">
-            <AdjustmentsHorizontalIcon className="h-5 w-5 mr-1" />
-            Filter
-          </button>
-          <Link href="/claims/new" className="flex items-center btn-primary">
-            <PlusIcon className="h-5 w-5 mr-1" />
-            New Claim
-          </Link>
-        </div>
-      </div>
-      
-      {/* Claims Queue - Card View */}
-      <div className="mb-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {pendingClaims.map((claim) => (
-            <ClaimCard
-              key={claim.id}
-              claimId={claim.id}
-              patientName={claim.patientName}
-              policyNumber={claim.policyNumber}
-              claimType={claim.type}
-              amount={claim.amount}
-              status={claim.status as any}
-              href={`/claims/${claim.id}`}
-            />
-          ))}
-        </div>
-      </div>
-      
-      {/* Recent Claims */}
-      <div className="card">
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="text-lg font-semibold text-neutral">Recent Claims</h2>
-        </div>
-        
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-secondary uppercase tracking-wider">
-                  Claim ID
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-secondary uppercase tracking-wider">
-                  Patient
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-secondary uppercase tracking-wider">
-                  Type
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-secondary uppercase tracking-wider">
-                  Provider
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-secondary uppercase tracking-wider">
-                  Submitted
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-secondary uppercase tracking-wider">
-                  Amount
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-secondary uppercase tracking-wider">
-                  Status
-                </th>
-                <th scope="col" className="relative px-6 py-3">
-                  <span className="sr-only">View</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {recentClaims.map((claim) => (
-                <tr key={claim.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral">
-                    {claim.id}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral">
-                    {claim.patientName}
-                    <div className="text-xs text-neutral-secondary">{claim.policyNumber}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-secondary">
-                    {claim.type}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-secondary">
-                    {claim.provider}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-secondary">
-                    {claim.submittedDate}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral">
-                    {claim.amount}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <StatusTag status={claim.status as any}>
-                      {claim.status === "pending" ? "Pending" :
-                       claim.status === "approved" ? "Approved" : 
-                       claim.status === "rejected" ? "Rejected" : "Processing"}
-                    </StatusTag>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <Link 
-                      href={`/claims/${claim.id}`} 
-                      className="text-primary hover:text-primary-dark flex items-center justify-end"
-                    >
-                      View
-                      <ChevronRightIcon className="h-4 w-4 ml-1" />
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        
-        {/* Pagination */}
-        <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-4">
-          <div className="flex flex-1 justify-between sm:hidden">
-            <button className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-neutral-secondary hover:bg-gray-50">
-              Previous
-            </button>
-            <button className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-neutral-secondary hover:bg-gray-50">
-              Next
-            </button>
-          </div>
-          <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm text-neutral-secondary">
-                Showing <span className="font-medium">1</span> to <span className="font-medium">4</span> of{" "}
-                <span className="font-medium">12</span> results
-              </p>
+      <div className="py-6">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="sm:flex sm:items-center sm:justify-between">
+            <h1 className="text-xl font-semibold text-gray-900">Claims</h1>
+            <div className="mt-4 sm:mt-0">
+              <Link 
+                href="/claims/new" 
+                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                <PlusIcon className="-ml-1 mr-2 h-5 w-5" aria-hidden="true" />
+                New Claim
+              </Link>
             </div>
-            <div>
-              <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-                <button className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
-                  <span className="sr-only">Previous</span>
-                  <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
-                </button>
-                <button aria-current="page" className="relative z-10 inline-flex items-center bg-primary px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
-                  1
-                </button>
-                <button className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-neutral-secondary ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
-                  2
-                </button>
-                <button className="relative hidden items-center px-4 py-2 text-sm font-semibold text-neutral-secondary ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex">
-                  3
-                </button>
-                <button className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
-                  <span className="sr-only">Next</span>
-                  <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
-                </button>
-              </nav>
+          </div>
+          
+          <div className="mt-6">
+            <div className="flex justify-between">
+              <div className="w-64 mb-4">
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                  </div>
+                  <input
+                    type="text"
+                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    placeholder="Search claims"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+            
+            <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+              <table className="min-w-full divide-y divide-gray-300">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
+                      Claim ID
+                    </th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                      Status
+                    </th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                      Member
+                    </th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                      Provider
+                    </th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                      Service Date
+                    </th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                      Submission Date
+                    </th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                      Amount
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 bg-white">
+                  {filteredClaims.map((claim) => (
+                    <tr key={claim.id} className="hover:bg-gray-50">
+                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-blue-600 sm:pl-6">
+                        <Link href={`/claims/${claim.id}`}>{claim.id}</Link>
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm">
+                        <span className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${
+                          claim.status === 'Approved' ? 'bg-green-100 text-green-800' :
+                          claim.status === 'Denied' ? 'bg-red-100 text-red-800' :
+                          claim.status === 'In Review' ? 'bg-blue-100 text-blue-800' :
+                          'bg-yellow-100 text-yellow-800'
+                        }`}>
+                          {claim.status}
+                        </span>
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
+                        {claim.memberName}
+                        <div className="text-xs text-gray-500">{claim.memberID}</div>
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
+                        {claim.provider}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                        {formatDate(claim.serviceDate)}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                        {formatDate(claim.submissionDate)}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
+                        ${claim.amount.toFixed(2)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
