@@ -228,6 +228,572 @@ export default function ClaimDetails({ params }: { params: { id: string } }) {
     return "text-red-500";
   };
 
+  // Function to render tab content based on active tab
+  const renderTabContent = () => {
+    switch(activeTab) {
+      case "Claim Details":
+        return renderClaimDetailsTab();
+      case "Documents":
+        return renderDocumentsTab();
+      case "Timeline":
+        return renderTimelineTab();
+      case "Notes":
+        return renderNotesTab();
+      default:
+        return renderClaimDetailsTab();
+    }
+  };
+
+  // Render functions for each tab
+  const renderClaimDetailsTab = () => {
+    return (
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+        {/* Claim Summary Section */}
+        <div className="p-4 border-b border-gray-200 flex items-center justify-between cursor-pointer" onClick={() => toggleSection("Claim Summary")}>
+          <div className="flex items-center">
+            <div className="mr-2 w-5 h-5 flex-shrink-0">
+              {expandedSections.includes("Claim Summary") ? (
+                <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+              ) : (
+                <ChevronDownIcon className="h-5 w-5 text-gray-500 transform -rotate-90" />
+              )}
+            </div>
+            <h3 className="text-base font-medium">Claim Summary</h3>
+          </div>
+        </div>
+        
+        {expandedSections.includes("Claim Summary") && (
+          <div className="p-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-xs text-gray-500 uppercase font-medium">Claim ID</p>
+                <p className="text-sm font-medium">{claimData.id}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 uppercase font-medium">Submission Date</p>
+                <p className="text-sm">{new Date(claimData.submissionDate).toLocaleDateString()}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 uppercase font-medium">Status</p>
+                <p className="text-sm">{claimData.status}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 uppercase font-medium">Total Amount</p>
+                <p className="text-sm font-medium">${claimData.totalAmount.toFixed(2)}</p>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* Member Information Section */}
+        <div className="p-4 border-b border-gray-200 flex items-center justify-between cursor-pointer" onClick={() => toggleSection("Member Information")}>
+          <div className="flex items-center">
+            <div className="mr-2 w-5 h-5 flex-shrink-0">
+              {expandedSections.includes("Member Information") ? (
+                <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+              ) : (
+                <ChevronDownIcon className="h-5 w-5 text-gray-500 transform -rotate-90" />
+              )}
+            </div>
+            <h3 className="text-base font-medium">Member Information</h3>
+          </div>
+        </div>
+        
+        {expandedSections.includes("Member Information") && (
+          <div className="p-4">
+            <div className="space-y-4">
+              {/* Member Name Field with conflict handling */}
+              <div className={`${hasFieldConflicts("memberName") ? "bg-yellow-50 p-3 rounded-lg" : ""}`}>
+                <div className="flex items-center space-x-2">
+                  {hasFieldConflicts("memberName") ? (
+                    <ExclamationTriangleIcon className="h-5 w-5 text-yellow-500" />
+                  ) : (
+                    <CheckCircleIcon className="h-5 w-5 text-green-500" />
+                  )}
+                  <span className="uppercase text-xs font-medium text-gray-500">Member Name</span>
+                </div>
+                <div className="relative mt-2" onClick={() => handleFieldSelect("memberName")}>
+                  <input
+                    type="text"
+                    value={getFieldValue("memberName", claimData.memberName)}
+                    readOnly
+                    className={`w-full p-2 pr-10 border ${selectedField === "memberName" ? "border-blue-500 ring-2 ring-blue-100" : hasFieldConflicts("memberName") ? "border-yellow-300" : "border-gray-300"} rounded-lg bg-white text-gray-900`}
+                  />
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">
+                    {hasFieldConflicts("memberName") && (
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openConflictModal("memberName");
+                        }}
+                        className="p-1 hover:bg-gray-100 rounded"
+                      >
+                        <ExclamationTriangleIcon className="h-4 w-4 text-yellow-500" />
+                      </button>
+                    )}
+                    {resolvedFields.memberName && (
+                      <>
+                        {renderSourceIndicator(resolvedFields.memberName.source)}
+                        <span className={`text-xs font-medium ${getConfidenceClass(resolvedFields.memberName.confidence)}`}>
+                          {resolvedFields.memberName.confidence}%
+                        </span>
+                      </>
+                    )}
+                  </div>
+                </div>
+                {hasFieldConflicts("memberName") && (
+                  <p className="text-xs text-yellow-600 mt-1 flex items-center">
+                    <ExclamationTriangleIcon className="h-3 w-3 mr-1" /> 
+                    Multiple values found - click icon to resolve
+                  </p>
+                )}
+              </div>
+              
+              {/* Member ID */}
+              <div>
+                <div className="flex items-center space-x-2">
+                  <CheckCircleIcon className="h-5 w-5 text-green-500" />
+                  <span className="uppercase text-xs font-medium text-gray-500">Member ID</span>
+                </div>
+                <div className="relative mt-2">
+                  <input
+                    type="text"
+                    value={claimData.memberID}
+                    readOnly
+                    className="w-full p-2 border border-gray-300 rounded-lg bg-white text-gray-900"
+                  />
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">
+                    <span className="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">DB</span>
+                    <span className="text-xs font-medium text-green-500">99%</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Policy Number */}
+              <div>
+                <div className="flex items-center space-x-2">
+                  <CheckCircleIcon className="h-5 w-5 text-green-500" />
+                  <span className="uppercase text-xs font-medium text-gray-500">Policy Number</span>
+                </div>
+                <div className="relative mt-2">
+                  <input
+                    type="text"
+                    value={claimData.policyNumber}
+                    readOnly
+                    className="w-full p-2 border border-gray-300 rounded-lg bg-white text-gray-900"
+                  />
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">
+                    <span className="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">DB</span>
+                    <span className="text-xs font-medium text-green-500">99%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* Provider Information Section */}
+        <div className="p-4 border-b border-gray-200 flex items-center justify-between cursor-pointer" onClick={() => toggleSection("Provider Information")}>
+          <div className="flex items-center">
+            <div className="mr-2 w-5 h-5 flex-shrink-0">
+              {expandedSections.includes("Provider Information") ? (
+                <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+              ) : (
+                <ChevronDownIcon className="h-5 w-5 text-gray-500 transform -rotate-90" />
+              )}
+            </div>
+            <h3 className="text-base font-medium">Provider Information</h3>
+          </div>
+        </div>
+        
+        {expandedSections.includes("Provider Information") && (
+          <div className="p-4">
+            <div className="space-y-4">
+              <div>
+                <div className="flex items-center space-x-2">
+                  <CheckCircleIcon className="h-5 w-5 text-green-500" />
+                  <span className="uppercase text-xs font-medium text-gray-500">Provider Name</span>
+                </div>
+                <div className="relative mt-2">
+                  <input
+                    type="text"
+                    value={claimData.provider.name}
+                    readOnly
+                    className="w-full p-2 border border-gray-300 rounded-lg bg-white text-gray-900"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <div className="flex items-center space-x-2">
+                  <CheckCircleIcon className="h-5 w-5 text-green-500" />
+                  <span className="uppercase text-xs font-medium text-gray-500">Provider ID</span>
+                </div>
+                <div className="relative mt-2">
+                  <input
+                    type="text"
+                    value={claimData.provider.id}
+                    readOnly
+                    className="w-full p-2 border border-gray-300 rounded-lg bg-white text-gray-900"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <div className="flex items-center space-x-2">
+                  <CheckCircleIcon className="h-5 w-5 text-green-500" />
+                  <span className="uppercase text-xs font-medium text-gray-500">Network Status</span>
+                </div>
+                <div className="relative mt-2">
+                  <input
+                    type="text"
+                    value={claimData.provider.networkStatus}
+                    readOnly
+                    className="w-full p-2 border border-gray-300 rounded-lg bg-white text-gray-900"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* Service Details Section */}
+        <div className="p-4 border-b border-gray-200 flex items-center justify-between cursor-pointer" onClick={() => toggleSection("Service Details")}>
+          <div className="flex items-center">
+            <div className="mr-2 w-5 h-5 flex-shrink-0">
+              {expandedSections.includes("Service Details") ? (
+                <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+              ) : (
+                <ChevronDownIcon className="h-5 w-5 text-gray-500 transform -rotate-90" />
+              )}
+            </div>
+            <h3 className="text-base font-medium">Service Details</h3>
+          </div>
+        </div>
+        
+        {expandedSections.includes("Service Details") && (
+          <div className="p-4">
+            <div className="space-y-4">
+              {/* Service Date Field with conflict handling */}
+              <div className={`${hasFieldConflicts("serviceDate") ? "bg-yellow-50 p-3 rounded-lg" : ""}`}>
+                <div className="flex items-center space-x-2">
+                  {hasFieldConflicts("serviceDate") ? (
+                    <ExclamationTriangleIcon className="h-5 w-5 text-yellow-500" />
+                  ) : (
+                    <CheckCircleIcon className="h-5 w-5 text-green-500" />
+                  )}
+                  <span className="uppercase text-xs font-medium text-gray-500">Service Date</span>
+                </div>
+                <div className="relative mt-2" onClick={() => handleFieldSelect("serviceDate")}>
+                  <input
+                    type="text"
+                    value={getFieldValue("serviceDate", new Date(claimData.services[0].date).toLocaleDateString())}
+                    readOnly
+                    className={`w-full p-2 pr-10 border ${selectedField === "serviceDate" ? "border-blue-500 ring-2 ring-blue-100" : hasFieldConflicts("serviceDate") ? "border-yellow-300" : "border-gray-300"} rounded-lg bg-white text-gray-900`}
+                  />
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">
+                    {hasFieldConflicts("serviceDate") && (
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openConflictModal("serviceDate");
+                        }}
+                        className="p-1 hover:bg-gray-100 rounded"
+                      >
+                        <ExclamationTriangleIcon className="h-4 w-4 text-yellow-500" />
+                      </button>
+                    )}
+                    {resolvedFields.serviceDate && (
+                      <>
+                        {renderSourceIndicator(resolvedFields.serviceDate.source)}
+                        <span className={`text-xs font-medium ${getConfidenceClass(resolvedFields.serviceDate.confidence)}`}>
+                          {resolvedFields.serviceDate.confidence}%
+                        </span>
+                      </>
+                    )}
+                  </div>
+                </div>
+                {hasFieldConflicts("serviceDate") && (
+                  <p className="text-xs text-yellow-600 mt-1 flex items-center">
+                    <ExclamationTriangleIcon className="h-3 w-3 mr-1" /> 
+                    Multiple values found - click icon to resolve
+                  </p>
+                )}
+              </div>
+              
+              {/* Service details table */}
+              <div className="mt-4">
+                <h4 className="text-sm font-medium mb-2">Services</h4>
+                <div className="border border-gray-200 rounded-lg overflow-hidden">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
+                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {claimData.services.map((service, idx) => (
+                        <tr key={idx}>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{service.code}</td>
+                          <td className="px-4 py-3 text-sm text-gray-500">{service.description}</td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${service.amount.toFixed(2)}</td>
+                        </tr>
+                      ))}
+                      <tr className="bg-gray-50">
+                        <td colSpan={2} className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 text-right">Total Amount:</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">${claimData.totalAmount.toFixed(2)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* Diagnosis Section */}
+        <div className="p-4 border-b border-gray-200 flex items-center justify-between cursor-pointer" onClick={() => toggleSection("Diagnosis")}>
+          <div className="flex items-center">
+            <div className="mr-2 w-5 h-5 flex-shrink-0">
+              {expandedSections.includes("Diagnosis") ? (
+                <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+              ) : (
+                <ChevronDownIcon className="h-5 w-5 text-gray-500 transform -rotate-90" />
+              )}
+            </div>
+            <h3 className="text-base font-medium">Diagnosis</h3>
+          </div>
+        </div>
+        
+        {expandedSections.includes("Diagnosis") && (
+          <div className="p-4">
+            <div className="space-y-4">
+              {/* Diagnosis Code Field with conflict handling */}
+              <div className={`${hasFieldConflicts("diagnosisCode") ? "bg-yellow-50 p-3 rounded-lg" : ""}`}>
+                <div className="flex items-center space-x-2">
+                  {hasFieldConflicts("diagnosisCode") ? (
+                    <ExclamationTriangleIcon className="h-5 w-5 text-yellow-500" />
+                  ) : (
+                    <CheckCircleIcon className="h-5 w-5 text-green-500" />
+                  )}
+                  <span className="uppercase text-xs font-medium text-gray-500">Primary Diagnosis Code</span>
+                </div>
+                <div className="relative mt-2" onClick={() => handleFieldSelect("diagnosisCode")}>
+                  <input
+                    type="text"
+                    value={getFieldValue("diagnosisCode", claimData.diagnosis[0].code)}
+                    readOnly
+                    className={`w-full p-2 pr-10 border ${selectedField === "diagnosisCode" ? "border-blue-500 ring-2 ring-blue-100" : hasFieldConflicts("diagnosisCode") ? "border-yellow-300" : "border-gray-300"} rounded-lg bg-white text-gray-900`}
+                  />
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">
+                    {hasFieldConflicts("diagnosisCode") && (
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openConflictModal("diagnosisCode");
+                        }}
+                        className="p-1 hover:bg-gray-100 rounded"
+                      >
+                        <ExclamationTriangleIcon className="h-4 w-4 text-yellow-500" />
+                      </button>
+                    )}
+                    {resolvedFields.diagnosisCode && (
+                      <>
+                        {renderSourceIndicator(resolvedFields.diagnosisCode.source)}
+                        <span className={`text-xs font-medium ${getConfidenceClass(resolvedFields.diagnosisCode.confidence)}`}>
+                          {resolvedFields.diagnosisCode.confidence}%
+                        </span>
+                      </>
+                    )}
+                  </div>
+                </div>
+                {hasFieldConflicts("diagnosisCode") && (
+                  <p className="text-xs text-yellow-600 mt-1 flex items-center">
+                    <ExclamationTriangleIcon className="h-3 w-3 mr-1" /> 
+                    Multiple values found - click icon to resolve
+                  </p>
+                )}
+              </div>
+              
+              {/* Diagnosis description */}
+              <div>
+                <div className="flex items-center space-x-2">
+                  <CheckCircleIcon className="h-5 w-5 text-green-500" />
+                  <span className="uppercase text-xs font-medium text-gray-500">Diagnosis Description</span>
+                </div>
+                <div className="relative mt-2">
+                  <input
+                    type="text"
+                    value={claimData.diagnosis[0].description}
+                    readOnly
+                    className="w-full p-2 border border-gray-300 rounded-lg bg-white text-gray-900"
+                  />
+                </div>
+              </div>
+              
+              {/* Secondary diagnoses */}
+              {claimData.diagnosis.length > 1 && (
+                <div className="mt-4">
+                  <h4 className="text-sm font-medium mb-2">Secondary Diagnoses</h4>
+                  <div className="border border-gray-200 rounded-lg overflow-hidden">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
+                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {claimData.diagnosis.slice(1).map((diagnosis, idx) => (
+                          <tr key={idx}>
+                            <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{diagnosis.code}</td>
+                            <td className="px-4 py-3 text-sm text-gray-500">{diagnosis.description}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+        
+        {/* Action buttons at bottom */}
+        <div className="p-4 flex justify-end space-x-3">
+          <button className="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-md">
+            Request Additional Info
+          </button>
+          <button className="px-4 py-2 bg-blue-500 text-white font-medium rounded-md">
+            Complete Registration
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  const renderDocumentsTab = () => {
+    return (
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4">
+        <h2 className="text-lg font-medium mb-4">Documents</h2>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {claimData.documents.map((doc) => (
+            <div 
+              key={doc.id}
+              className="border border-gray-200 rounded-lg p-4 hover:shadow-md cursor-pointer"
+              onClick={() => handleDocumentClick(doc.id)}
+            >
+              <div className="flex items-center mb-2">
+                <DocumentTextIcon className="h-6 w-6 text-blue-500 mr-2" />
+                <h3 className="font-medium text-gray-900">{doc.name}</h3>
+              </div>
+              <p className="text-sm text-gray-500 mb-2">{doc.type}</p>
+              <div className="text-xs text-gray-500 flex justify-between">
+                <span>Uploaded by: {doc.uploadedBy}</span>
+                <span>Date: {doc.lastEdited}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  const renderTimelineTab = () => {
+    return (
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4">
+        <h2 className="text-lg font-medium mb-4">Claim Timeline</h2>
+        <div className="relative border-l-2 border-gray-200 ml-3 pl-8 pb-2">
+          <div className="mb-8">
+            <div className="absolute -left-2 mt-1.5">
+              <div className="h-4 w-4 rounded-full bg-blue-500"></div>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xs text-gray-500">Today - 10:15 AM</span>
+              <span className="font-medium text-sm mt-1">Claim reviewed by Jane Operator</span>
+              <p className="text-sm text-gray-600 mt-1">Added notes about diagnosis code verification</p>
+            </div>
+          </div>
+          <div className="mb-8">
+            <div className="absolute -left-2 mt-1.5">
+              <div className="h-4 w-4 rounded-full bg-blue-500"></div>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xs text-gray-500">Yesterday - 3:30 PM</span>
+              <span className="font-medium text-sm mt-1">Document added</span>
+              <p className="text-sm text-gray-600 mt-1">Medical Report was uploaded by Provider Upload</p>
+            </div>
+          </div>
+          <div className="mb-8">
+            <div className="absolute -left-2 mt-1.5">
+              <div className="h-4 w-4 rounded-full bg-blue-500"></div>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xs text-gray-500">{new Date(claimData.submissionDate).toLocaleDateString()} - {new Date(claimData.submissionDate).toLocaleTimeString()}</span>
+              <span className="font-medium text-sm mt-1">Claim submitted</span>
+              <p className="text-sm text-gray-600 mt-1">Initial claim was submitted through the web portal</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderNotesTab = () => {
+    return (
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-medium">Notes</h2>
+          <button className="bg-blue-500 text-white px-3 py-1.5 rounded text-sm font-medium">
+            Add Note
+          </button>
+        </div>
+        
+        <div className="space-y-4">
+          <div className="bg-gray-50 p-3 rounded-lg">
+            <div className="flex justify-between mb-2">
+              <span className="font-medium text-sm">Jane Operator</span>
+              <span className="text-xs text-gray-500">Today - 10:15 AM</span>
+            </div>
+            <p className="text-sm text-gray-700">
+              Verified diagnosis code J45.909 against medical report. Code appears to be correct, but there's a minor discrepancy with the claim form.
+            </p>
+          </div>
+          
+          <div className="bg-gray-50 p-3 rounded-lg">
+            <div className="flex justify-between mb-2">
+              <span className="font-medium text-sm">System</span>
+              <span className="text-xs text-gray-500">Yesterday - 2:30 PM</span>
+            </div>
+            <p className="text-sm text-gray-700">
+              Automatic verification found a conflict in patient name between the database and submitted documents.
+            </p>
+          </div>
+          
+          <div className="bg-gray-50 p-3 rounded-lg">
+            <div className="flex justify-between mb-2">
+              <span className="font-medium text-sm">Mark Thompson</span>
+              <span className="text-xs text-gray-500">{new Date(claimData.submissionDate).toLocaleDateString()}</span>
+            </div>
+            <p className="text-sm text-gray-700">
+              Initial claim review. Member appears eligible for benefits. Need to verify service date discrepancy between claim form and invoice.
+            </p>
+          </div>
+        </div>
+        
+        <div className="mt-6">
+          <textarea 
+            placeholder="Add a new note..."
+            className="w-full border border-gray-300 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500"
+            rows={3}
+          ></textarea>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <AppLayout>
       <div className="flex flex-col h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -239,7 +805,7 @@ export default function ClaimDetails({ params }: { params: { id: string } }) {
           </Link>
           
           <div className="mt-4 flex justify-between items-center">
-            <h1 className="text-xl font-semibold text-gray-900">Claim {claimId}</h1>
+            <h1 className="text-xl font-semibold text-gray-900">Claim {claimData.id}</h1>
             <div className="flex items-center space-x-2">
               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                 claimData.status === 'Approved' ? 'bg-green-100 text-green-800' :
@@ -293,430 +859,7 @@ export default function ClaimDetails({ params }: { params: { id: string } }) {
         <div className="flex flex-1">
           {/* Main content area */}
           <div className={`${showDocumentPanel ? 'w-3/5' : 'flex-1'}`}>
-            <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-              {/* Claim Summary Section */}
-              <div className="p-4 border-b border-gray-200 flex items-center justify-between cursor-pointer" onClick={() => toggleSection("Claim Summary")}>
-                <div className="flex items-center">
-                  <div className="mr-2 w-5 h-5 flex-shrink-0">
-                    {expandedSections.includes("Claim Summary") ? (
-                      <ChevronDownIcon className="h-5 w-5 text-gray-500" />
-                    ) : (
-                      <ChevronDownIcon className="h-5 w-5 text-gray-500 transform -rotate-90" />
-                    )}
-                  </div>
-                  <h3 className="text-base font-medium">Claim Summary</h3>
-                </div>
-              </div>
-              
-              {expandedSections.includes("Claim Summary") && (
-                <div className="p-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-xs text-gray-500 uppercase font-medium">Claim ID</p>
-                      <p className="text-sm font-medium">{claimData.id}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-500 uppercase font-medium">Submission Date</p>
-                      <p className="text-sm">{new Date(claimData.submissionDate).toLocaleDateString()}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-500 uppercase font-medium">Status</p>
-                      <p className="text-sm">{claimData.status}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-500 uppercase font-medium">Total Amount</p>
-                      <p className="text-sm font-medium">${claimData.totalAmount.toFixed(2)}</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              {/* Member Information Section */}
-              <div className="p-4 border-b border-gray-200 flex items-center justify-between cursor-pointer" onClick={() => toggleSection("Member Information")}>
-                <div className="flex items-center">
-                  <div className="mr-2 w-5 h-5 flex-shrink-0">
-                    {expandedSections.includes("Member Information") ? (
-                      <ChevronDownIcon className="h-5 w-5 text-gray-500" />
-                    ) : (
-                      <ChevronDownIcon className="h-5 w-5 text-gray-500 transform -rotate-90" />
-                    )}
-                  </div>
-                  <h3 className="text-base font-medium">Member Information</h3>
-                </div>
-              </div>
-              
-              {expandedSections.includes("Member Information") && (
-                <div className="p-4">
-                  <div className="space-y-4">
-                    {/* Member Name Field with conflict handling */}
-                    <div className={`${hasFieldConflicts("memberName") ? "bg-yellow-50 p-3 rounded-lg" : ""}`}>
-                      <div className="flex items-center space-x-2">
-                        {hasFieldConflicts("memberName") ? (
-                          <ExclamationTriangleIcon className="h-5 w-5 text-yellow-500" />
-                        ) : (
-                          <CheckCircleIcon className="h-5 w-5 text-green-500" />
-                        )}
-                        <span className="uppercase text-xs font-medium text-gray-500">Member Name</span>
-                      </div>
-                      <div className="relative mt-2" onClick={() => handleFieldSelect("memberName")}>
-                        <input
-                          type="text"
-                          value={getFieldValue("memberName", claimData.memberName)}
-                          readOnly
-                          className={`w-full p-2 pr-10 border ${selectedField === "memberName" ? "border-blue-500 ring-2 ring-blue-100" : hasFieldConflicts("memberName") ? "border-yellow-300" : "border-gray-300"} rounded-lg bg-white text-gray-900`}
-                        />
-                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">
-                          {hasFieldConflicts("memberName") && (
-                            <button 
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openConflictModal("memberName");
-                              }}
-                              className="p-1 hover:bg-gray-100 rounded"
-                            >
-                              <ExclamationTriangleIcon className="h-4 w-4 text-yellow-500" />
-                            </button>
-                          )}
-                          {resolvedFields.memberName && (
-                            <>
-                              {renderSourceIndicator(resolvedFields.memberName.source)}
-                              <span className={`text-xs font-medium ${getConfidenceClass(resolvedFields.memberName.confidence)}`}>
-                                {resolvedFields.memberName.confidence}%
-                              </span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                      {hasFieldConflicts("memberName") && (
-                        <p className="text-xs text-yellow-600 mt-1 flex items-center">
-                          <ExclamationTriangleIcon className="h-3 w-3 mr-1" /> 
-                          Multiple values found - click icon to resolve
-                        </p>
-                      )}
-                    </div>
-                    
-                    {/* Member ID */}
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <CheckCircleIcon className="h-5 w-5 text-green-500" />
-                        <span className="uppercase text-xs font-medium text-gray-500">Member ID</span>
-                      </div>
-                      <div className="relative mt-2">
-                        <input
-                          type="text"
-                          value={claimData.memberID}
-                          readOnly
-                          className="w-full p-2 border border-gray-300 rounded-lg bg-white text-gray-900"
-                        />
-                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">
-                          <span className="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">DB</span>
-                          <span className="text-xs font-medium text-green-500">99%</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Policy Number */}
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <CheckCircleIcon className="h-5 w-5 text-green-500" />
-                        <span className="uppercase text-xs font-medium text-gray-500">Policy Number</span>
-                      </div>
-                      <div className="relative mt-2">
-                        <input
-                          type="text"
-                          value={claimData.policyNumber}
-                          readOnly
-                          className="w-full p-2 border border-gray-300 rounded-lg bg-white text-gray-900"
-                        />
-                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">
-                          <span className="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">DB</span>
-                          <span className="text-xs font-medium text-green-500">99%</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              {/* Provider Information Section */}
-              <div className="p-4 border-b border-gray-200 flex items-center justify-between cursor-pointer" onClick={() => toggleSection("Provider Information")}>
-                <div className="flex items-center">
-                  <div className="mr-2 w-5 h-5 flex-shrink-0">
-                    {expandedSections.includes("Provider Information") ? (
-                      <ChevronDownIcon className="h-5 w-5 text-gray-500" />
-                    ) : (
-                      <ChevronDownIcon className="h-5 w-5 text-gray-500 transform -rotate-90" />
-                    )}
-                  </div>
-                  <h3 className="text-base font-medium">Provider Information</h3>
-                </div>
-              </div>
-              
-              {expandedSections.includes("Provider Information") && (
-                <div className="p-4">
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <CheckCircleIcon className="h-5 w-5 text-green-500" />
-                        <span className="uppercase text-xs font-medium text-gray-500">Provider Name</span>
-                      </div>
-                      <div className="relative mt-2">
-                        <input
-                          type="text"
-                          value={claimData.provider.name}
-                          readOnly
-                          className="w-full p-2 border border-gray-300 rounded-lg bg-white text-gray-900"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <CheckCircleIcon className="h-5 w-5 text-green-500" />
-                        <span className="uppercase text-xs font-medium text-gray-500">Provider ID</span>
-                      </div>
-                      <div className="relative mt-2">
-                        <input
-                          type="text"
-                          value={claimData.provider.id}
-                          readOnly
-                          className="w-full p-2 border border-gray-300 rounded-lg bg-white text-gray-900"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <CheckCircleIcon className="h-5 w-5 text-green-500" />
-                        <span className="uppercase text-xs font-medium text-gray-500">Network Status</span>
-                      </div>
-                      <div className="relative mt-2">
-                        <input
-                          type="text"
-                          value={claimData.provider.networkStatus}
-                          readOnly
-                          className="w-full p-2 border border-gray-300 rounded-lg bg-white text-gray-900"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              {/* Service Details Section */}
-              <div className="p-4 border-b border-gray-200 flex items-center justify-between cursor-pointer" onClick={() => toggleSection("Service Details")}>
-                <div className="flex items-center">
-                  <div className="mr-2 w-5 h-5 flex-shrink-0">
-                    {expandedSections.includes("Service Details") ? (
-                      <ChevronDownIcon className="h-5 w-5 text-gray-500" />
-                    ) : (
-                      <ChevronDownIcon className="h-5 w-5 text-gray-500 transform -rotate-90" />
-                    )}
-                  </div>
-                  <h3 className="text-base font-medium">Service Details</h3>
-                </div>
-              </div>
-              
-              {expandedSections.includes("Service Details") && (
-                <div className="p-4">
-                  <div className="space-y-4">
-                    {/* Service Date Field with conflict handling */}
-                    <div className={`${hasFieldConflicts("serviceDate") ? "bg-yellow-50 p-3 rounded-lg" : ""}`}>
-                      <div className="flex items-center space-x-2">
-                        {hasFieldConflicts("serviceDate") ? (
-                          <ExclamationTriangleIcon className="h-5 w-5 text-yellow-500" />
-                        ) : (
-                          <CheckCircleIcon className="h-5 w-5 text-green-500" />
-                        )}
-                        <span className="uppercase text-xs font-medium text-gray-500">Service Date</span>
-                      </div>
-                      <div className="relative mt-2" onClick={() => handleFieldSelect("serviceDate")}>
-                        <input
-                          type="text"
-                          value={getFieldValue("serviceDate", new Date(claimData.services[0].date).toLocaleDateString())}
-                          readOnly
-                          className={`w-full p-2 pr-10 border ${selectedField === "serviceDate" ? "border-blue-500 ring-2 ring-blue-100" : hasFieldConflicts("serviceDate") ? "border-yellow-300" : "border-gray-300"} rounded-lg bg-white text-gray-900`}
-                        />
-                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">
-                          {hasFieldConflicts("serviceDate") && (
-                            <button 
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openConflictModal("serviceDate");
-                              }}
-                              className="p-1 hover:bg-gray-100 rounded"
-                            >
-                              <ExclamationTriangleIcon className="h-4 w-4 text-yellow-500" />
-                            </button>
-                          )}
-                          {resolvedFields.serviceDate && (
-                            <>
-                              {renderSourceIndicator(resolvedFields.serviceDate.source)}
-                              <span className={`text-xs font-medium ${getConfidenceClass(resolvedFields.serviceDate.confidence)}`}>
-                                {resolvedFields.serviceDate.confidence}%
-                              </span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                      {hasFieldConflicts("serviceDate") && (
-                        <p className="text-xs text-yellow-600 mt-1 flex items-center">
-                          <ExclamationTriangleIcon className="h-3 w-3 mr-1" /> 
-                          Multiple values found - click icon to resolve
-                        </p>
-                      )}
-                    </div>
-                    
-                    {/* Service details table */}
-                    <div className="mt-4">
-                      <h4 className="text-sm font-medium mb-2">Services</h4>
-                      <div className="border border-gray-200 rounded-lg overflow-hidden">
-                        <table className="min-w-full divide-y divide-gray-200">
-                          <thead className="bg-gray-50">
-                            <tr>
-                              <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
-                              <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                              <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                            </tr>
-                          </thead>
-                          <tbody className="bg-white divide-y divide-gray-200">
-                            {claimData.services.map((service, idx) => (
-                              <tr key={idx}>
-                                <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{service.code}</td>
-                                <td className="px-4 py-3 text-sm text-gray-500">{service.description}</td>
-                                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${service.amount.toFixed(2)}</td>
-                              </tr>
-                            ))}
-                            <tr className="bg-gray-50">
-                              <td colSpan={2} className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 text-right">Total Amount:</td>
-                              <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">${claimData.totalAmount.toFixed(2)}</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              {/* Diagnosis Section */}
-              <div className="p-4 border-b border-gray-200 flex items-center justify-between cursor-pointer" onClick={() => toggleSection("Diagnosis")}>
-                <div className="flex items-center">
-                  <div className="mr-2 w-5 h-5 flex-shrink-0">
-                    {expandedSections.includes("Diagnosis") ? (
-                      <ChevronDownIcon className="h-5 w-5 text-gray-500" />
-                    ) : (
-                      <ChevronDownIcon className="h-5 w-5 text-gray-500 transform -rotate-90" />
-                    )}
-                  </div>
-                  <h3 className="text-base font-medium">Diagnosis</h3>
-                </div>
-              </div>
-              
-              {expandedSections.includes("Diagnosis") && (
-                <div className="p-4">
-                  <div className="space-y-4">
-                    {/* Diagnosis Code Field with conflict handling */}
-                    <div className={`${hasFieldConflicts("diagnosisCode") ? "bg-yellow-50 p-3 rounded-lg" : ""}`}>
-                      <div className="flex items-center space-x-2">
-                        {hasFieldConflicts("diagnosisCode") ? (
-                          <ExclamationTriangleIcon className="h-5 w-5 text-yellow-500" />
-                        ) : (
-                          <CheckCircleIcon className="h-5 w-5 text-green-500" />
-                        )}
-                        <span className="uppercase text-xs font-medium text-gray-500">Primary Diagnosis Code</span>
-                      </div>
-                      <div className="relative mt-2" onClick={() => handleFieldSelect("diagnosisCode")}>
-                        <input
-                          type="text"
-                          value={getFieldValue("diagnosisCode", claimData.diagnosis[0].code)}
-                          readOnly
-                          className={`w-full p-2 pr-10 border ${selectedField === "diagnosisCode" ? "border-blue-500 ring-2 ring-blue-100" : hasFieldConflicts("diagnosisCode") ? "border-yellow-300" : "border-gray-300"} rounded-lg bg-white text-gray-900`}
-                        />
-                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">
-                          {hasFieldConflicts("diagnosisCode") && (
-                            <button 
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openConflictModal("diagnosisCode");
-                              }}
-                              className="p-1 hover:bg-gray-100 rounded"
-                            >
-                              <ExclamationTriangleIcon className="h-4 w-4 text-yellow-500" />
-                            </button>
-                          )}
-                          {resolvedFields.diagnosisCode && (
-                            <>
-                              {renderSourceIndicator(resolvedFields.diagnosisCode.source)}
-                              <span className={`text-xs font-medium ${getConfidenceClass(resolvedFields.diagnosisCode.confidence)}`}>
-                                {resolvedFields.diagnosisCode.confidence}%
-                              </span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                      {hasFieldConflicts("diagnosisCode") && (
-                        <p className="text-xs text-yellow-600 mt-1 flex items-center">
-                          <ExclamationTriangleIcon className="h-3 w-3 mr-1" /> 
-                          Multiple values found - click icon to resolve
-                        </p>
-                      )}
-                    </div>
-                    
-                    {/* Diagnosis description */}
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <CheckCircleIcon className="h-5 w-5 text-green-500" />
-                        <span className="uppercase text-xs font-medium text-gray-500">Diagnosis Description</span>
-                      </div>
-                      <div className="relative mt-2">
-                        <input
-                          type="text"
-                          value={claimData.diagnosis[0].description}
-                          readOnly
-                          className="w-full p-2 border border-gray-300 rounded-lg bg-white text-gray-900"
-                        />
-                      </div>
-                    </div>
-                    
-                    {/* Secondary diagnoses */}
-                    {claimData.diagnosis.length > 1 && (
-                      <div className="mt-4">
-                        <h4 className="text-sm font-medium mb-2">Secondary Diagnoses</h4>
-                        <div className="border border-gray-200 rounded-lg overflow-hidden">
-                          <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
-                              <tr>
-                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
-                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                              </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                              {claimData.diagnosis.slice(1).map((diagnosis, idx) => (
-                                <tr key={idx}>
-                                  <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{diagnosis.code}</td>
-                                  <td className="px-4 py-3 text-sm text-gray-500">{diagnosis.description}</td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-              
-              {/* Action buttons at bottom */}
-              <div className="p-4 flex justify-end space-x-3">
-                <button className="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-md">
-                  Request Additional Info
-                </button>
-                <button className="px-4 py-2 bg-blue-500 text-white font-medium rounded-md">
-                  Complete Registration
-                </button>
-              </div>
-            </div>
+            {renderTabContent()}
           </div>
           
           {/* Document panel */}
