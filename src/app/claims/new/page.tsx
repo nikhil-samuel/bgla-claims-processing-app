@@ -1,9 +1,19 @@
 "use client";
 
 import AppLayout from "@/components/Layout/AppLayout";
+import SectionCard from "@/components/ui/SectionCard";
+import FormField from "@/components/ui/FormField";
+import StatusTag from "@/components/ui/StatusTag";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowUturnLeftIcon, PaperClipIcon } from "@heroicons/react/24/outline";
+import { 
+  ArrowUturnLeftIcon, 
+  PaperClipIcon, 
+  CalendarIcon, 
+  CheckIcon,
+  XMarkIcon,
+  SyncIcon  
+} from "@heroicons/react/24/outline";
 import Link from "next/link";
 
 export default function NewClaim() {
@@ -11,12 +21,18 @@ export default function NewClaim() {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     claimType: "",
-    policyNumber: "",
-    patientName: "",
+    policyNumber: "THB9876543",
+    policyHolderName: "Somchai Jaidee",
+    idNumber: "1-1022-33445-67-8",
     dateOfService: "",
     providerName: "",
     totalAmount: "",
     description: "",
+    isIllness: "yes",
+    isAccident: "yes",
+    accidentDate: "",
+    accidentLocation: "",
+    symptoms: "",
     acceptTerms: false,
   });
   const [files, setFiles] = useState<File[]>([]);
@@ -61,8 +77,8 @@ export default function NewClaim() {
     <AppLayout>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Submit New Claim</h1>
-          <p className="text-gray-600">Please provide the details for your insurance claim</p>
+          <h1 className="text-2xl font-bold text-neutral">Submit New Claim</h1>
+          <p className="text-neutral-secondary">Please provide the details for your insurance claim</p>
         </div>
         <Link href="/claims" className="btn-secondary flex items-center">
           <ArrowUturnLeftIcon className="mr-1 h-4 w-4" />
@@ -73,37 +89,197 @@ export default function NewClaim() {
       <div className="card mb-6">
         <div className="w-full py-4">
           <div className="flex w-full items-center">
-            <div className={`flex-1 border-t-4 ${currentStep >= 1 ? "border-bgla-blue" : "border-gray-200"}`}></div>
-            <div className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold ${currentStep >= 1 ? "bg-bgla-blue text-white" : "bg-gray-200 text-gray-700"}`}>
+            <div className={`flex-1 border-t-4 ${currentStep >= 1 ? "border-primary" : "border-gray-200"}`}></div>
+            <div className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold ${currentStep >= 1 ? "bg-primary text-white" : "bg-gray-200 text-gray-700"}`}>
               1
             </div>
-            <div className={`flex-1 border-t-4 ${currentStep >= 2 ? "border-bgla-blue" : "border-gray-200"}`}></div>
-            <div className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold ${currentStep >= 2 ? "bg-bgla-blue text-white" : "bg-gray-200 text-gray-700"}`}>
+            <div className={`flex-1 border-t-4 ${currentStep >= 2 ? "border-primary" : "border-gray-200"}`}></div>
+            <div className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold ${currentStep >= 2 ? "bg-primary text-white" : "bg-gray-200 text-gray-700"}`}>
               2
             </div>
-            <div className={`flex-1 border-t-4 ${currentStep >= 3 ? "border-bgla-blue" : "border-gray-200"}`}></div>
-            <div className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold ${currentStep >= 3 ? "bg-bgla-blue text-white" : "bg-gray-200 text-gray-700"}`}>
+            <div className={`flex-1 border-t-4 ${currentStep >= 3 ? "border-primary" : "border-gray-200"}`}></div>
+            <div className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold ${currentStep >= 3 ? "bg-primary text-white" : "bg-gray-200 text-gray-700"}`}>
               3
             </div>
-            <div className={`flex-1 border-t-4 ${currentStep >= 3 ? "border-bgla-blue" : "border-gray-200"}`}></div>
+            <div className={`flex-1 border-t-4 ${currentStep >= 3 ? "border-primary" : "border-gray-200"}`}></div>
           </div>
           <div className="mt-2 flex w-full justify-between text-xs">
-            <div className={`w-10 text-center ${currentStep >= 1 ? "text-bgla-blue" : "text-gray-500"}`}>Claim Info</div>
-            <div className={`w-16 text-center ${currentStep >= 2 ? "text-bgla-blue" : "text-gray-500"}`}>Documents</div>
-            <div className={`w-16 text-center ${currentStep >= 3 ? "text-bgla-blue" : "text-gray-500"}`}>Review</div>
+            <div className={`w-20 text-center ${currentStep >= 1 ? "text-primary" : "text-neutral-secondary"}`}>Policy & Member</div>
+            <div className={`w-20 text-center ${currentStep >= 2 ? "text-primary" : "text-neutral-secondary"}`}>Claim</div>
+            <div className={`w-20 text-center ${currentStep >= 3 ? "text-primary" : "text-neutral-secondary"}`}>Review</div>
           </div>
         </div>
       </div>
 
-      <div className="card">
-        <form onSubmit={handleSubmit}>
-          {/* Step 1: Claim Information */}
-          {currentStep === 1 && (
-            <div>
-              <h2 className="mb-4 text-xl font-semibold">Claim Information</h2>
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <div>
-                  <label htmlFor="claimType" className="form-label">Claim Type*</label>
+      <form onSubmit={handleSubmit}>
+        {/* Step 1: Policy & Member Information */}
+        {currentStep === 1 && (
+          <>
+            <SectionCard title="Policy & Member">
+              <div className="form-row">
+                <FormField 
+                  label="Policy Number" 
+                  htmlFor="policyNumber" 
+                  validationState="success"
+                  required
+                >
+                  <div className="flex">
+                    <input
+                      id="policyNumber"
+                      name="policyNumber"
+                      type="text"
+                      value={formData.policyNumber}
+                      onChange={handleInputChange}
+                      className="form-input"
+                      readOnly
+                    />
+                  </div>
+                </FormField>
+                
+                <FormField 
+                  label="Policy Holder Name" 
+                  htmlFor="policyHolderName" 
+                  validationState="error"
+                  validationMessage="Conflicting info from different sources"
+                  required
+                >
+                  <input
+                    id="policyHolderName"
+                    name="policyHolderName"
+                    type="text"
+                    value={formData.policyHolderName}
+                    onChange={handleInputChange}
+                    className="form-input border-error"
+                    readOnly
+                  />
+                </FormField>
+              </div>
+              
+              <div className="form-row">
+                <FormField 
+                  label="ID / Passport Number" 
+                  htmlFor="idNumber" 
+                  validationState="success"
+                  required
+                >
+                  <input
+                    id="idNumber"
+                    name="idNumber"
+                    type="text"
+                    value={formData.idNumber}
+                    onChange={handleInputChange}
+                    className="form-input"
+                    readOnly
+                  />
+                </FormField>
+                
+                <FormField 
+                  label="Has Other Insurance" 
+                  htmlFor="hasOtherInsurance" 
+                >
+                  <div className="flex gap-2">
+                    <button 
+                      type="button" 
+                      className="bg-primary text-white px-4 py-2 rounded font-medium"
+                    >
+                      Yes
+                    </button>
+                    <button 
+                      type="button" 
+                      className="bg-gray-200 text-neutral-secondary px-4 py-2 rounded font-medium"
+                    >
+                      No
+                    </button>
+                  </div>
+                </FormField>
+              </div>
+            </SectionCard>
+            
+            <SectionCard title="Additional Member Information">
+              <div className="form-row">
+                <FormField 
+                  label="Gender" 
+                  htmlFor="gender" 
+                >
+                  <div className="flex gap-2">
+                    <button 
+                      type="button" 
+                      className="bg-primary text-white px-4 py-2 rounded font-medium"
+                    >
+                      Male
+                    </button>
+                    <button 
+                      type="button" 
+                      className="bg-gray-200 text-neutral-secondary px-4 py-2 rounded font-medium"
+                    >
+                      Female
+                    </button>
+                    <button 
+                      type="button" 
+                      className="bg-gray-200 text-neutral-secondary px-4 py-2 rounded font-medium"
+                    >
+                      Other
+                    </button>
+                  </div>
+                </FormField>
+                
+                <FormField 
+                  label="Age" 
+                  htmlFor="age" 
+                  validationState="success"
+                >
+                  <input
+                    id="age"
+                    name="age"
+                    type="text"
+                    value="54"
+                    className="form-input"
+                    readOnly
+                  />
+                </FormField>
+              </div>
+              
+              <div className="form-row">
+                <FormField 
+                  label="Phone Number" 
+                  htmlFor="phoneNumber" 
+                  validationState="success"
+                >
+                  <input
+                    id="phoneNumber"
+                    name="phoneNumber"
+                    type="text"
+                    value="+33 9 87 86 75 61"
+                    className="form-input"
+                    readOnly
+                  />
+                </FormField>
+              </div>
+            </SectionCard>
+            
+            <div className="mt-8 flex justify-end">
+              <button
+                type="button"
+                onClick={nextStep}
+                className="btn-primary"
+              >
+                Next: Claim Details
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* Step 2: Claim Details */}
+        {currentStep === 2 && (
+          <>
+            <SectionCard title="Claim">
+              <div className="form-row">
+                <FormField 
+                  label="Claim Type" 
+                  htmlFor="claimType" 
+                  validationState="success"
+                  required
+                >
                   <select
                     id="claimType"
                     name="claimType"
@@ -113,157 +289,206 @@ export default function NewClaim() {
                     required
                   >
                     <option value="">Select a claim type</option>
-                    <option value="Medical">Medical</option>
-                    <option value="Dental">Dental</option>
-                    <option value="Vision">Vision</option>
-                    <option value="Pharmacy">Pharmacy</option>
-                    <option value="Mental Health">Mental Health</option>
-                    <option value="Physical Therapy">Physical Therapy</option>
+                    <option value="OPD Claim">OPD Claim</option>
+                    <option value="IPD Claim">IPD Claim</option>
+                    <option value="Dental Claim">Dental Claim</option>
+                    <option value="Vision Claim">Vision Claim</option>
                   </select>
-                </div>
-                <div>
-                  <label htmlFor="policyNumber" className="form-label">Policy Number*</label>
-                  <input
-                    id="policyNumber"
-                    name="policyNumber"
-                    type="text"
-                    value={formData.policyNumber}
-                    onChange={handleInputChange}
-                    className="form-input"
-                    placeholder="e.g., BGLA-12345678"
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="patientName" className="form-label">Patient Name*</label>
-                  <input
-                    id="patientName"
-                    name="patientName"
-                    type="text"
-                    value={formData.patientName}
-                    onChange={handleInputChange}
-                    className="form-input"
-                    placeholder="Full name of the patient"
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="dateOfService" className="form-label">Date of Service*</label>
-                  <input
-                    id="dateOfService"
-                    name="dateOfService"
-                    type="date"
-                    value={formData.dateOfService}
-                    onChange={handleInputChange}
-                    className="form-input"
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="providerName" className="form-label">Provider Name*</label>
-                  <input
-                    id="providerName"
-                    name="providerName"
-                    type="text"
-                    value={formData.providerName}
-                    onChange={handleInputChange}
-                    className="form-input"
-                    placeholder="Name of healthcare provider"
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="totalAmount" className="form-label">Total Amount*</label>
-                  <input
-                    id="totalAmount"
-                    name="totalAmount"
-                    type="text"
-                    value={formData.totalAmount}
-                    onChange={handleInputChange}
-                    className="form-input"
-                    placeholder="e.g., 1250.00"
-                    required
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label htmlFor="description" className="form-label">Description</label>
-                  <textarea
-                    id="description"
-                    name="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
-                    rows={4}
-                    className="form-input"
-                    placeholder="Provide additional details about your claim"
-                  ></textarea>
-                </div>
-              </div>
-
-              <div className="mt-8 flex justify-end">
-                <button
-                  type="button"
-                  onClick={nextStep}
-                  className="btn-primary"
+                </FormField>
+                
+                <FormField 
+                  label="Illness" 
+                  htmlFor="isIllness" 
                 >
-                  Next: Upload Documents
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Step 2: Document Upload */}
-          {currentStep === 2 && (
-            <div>
-              <h2 className="mb-4 text-xl font-semibold">Upload Supporting Documents</h2>
-              <p className="mb-6 text-gray-600">
-                Please upload any relevant documents to support your claim (receipts, bills, medical reports, etc.).
-              </p>
-
-              <div className="mb-6">
-                <label className="form-label">Documents</label>
-                <div className="mt-2 flex justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
-                  <div className="space-y-1 text-center">
-                    <svg
-                      className="mx-auto h-12 w-12 text-gray-400"
-                      stroke="currentColor"
-                      fill="none"
-                      viewBox="0 0 48 48"
-                      aria-hidden="true"
+                  <div className="flex gap-2">
+                    <button 
+                      type="button" 
+                      className="bg-primary text-white px-4 py-2 rounded font-medium"
                     >
-                      <path
-                        d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                        strokeWidth={2}
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    <div className="flex text-sm text-gray-600">
-                      <label
-                        htmlFor="file-upload"
-                        className="relative cursor-pointer rounded-md bg-white font-medium text-bgla-blue focus-within:outline-none focus-within:ring-2 focus-within:ring-bgla-blue focus-within:ring-offset-2 hover:text-bgla-light-blue"
-                      >
-                        <span>Upload files</span>
-                        <input
-                          id="file-upload"
-                          name="file-upload"
-                          type="file"
-                          multiple
-                          onChange={handleFileChange}
-                          className="sr-only"
-                        />
-                      </label>
-                      <p className="pl-1">or drag and drop</p>
-                    </div>
-                    <p className="text-xs text-gray-500">
-                      PNG, JPG, PDF up to 10MB each
-                    </p>
+                      Yes
+                    </button>
+                    <button 
+                      type="button" 
+                      className="bg-gray-200 text-neutral-secondary px-4 py-2 rounded font-medium"
+                    >
+                      No
+                    </button>
                   </div>
-                </div>
+                </FormField>
               </div>
-
+              
+              <div className="form-row">
+                <FormField 
+                  label="Accident" 
+                  htmlFor="isAccident" 
+                  validationState="success"
+                >
+                  <div className="flex gap-2">
+                    <button 
+                      type="button" 
+                      className="bg-primary text-white px-4 py-2 rounded font-medium"
+                    >
+                      Yes
+                    </button>
+                    <button 
+                      type="button" 
+                      className="bg-gray-200 text-neutral-secondary px-4 py-2 rounded font-medium"
+                    >
+                      No
+                    </button>
+                  </div>
+                </FormField>
+              </div>
+              
+              <div className="form-row">
+                <FormField 
+                  label="Service Date" 
+                  htmlFor="dateOfService" 
+                  validationState="success"
+                  required
+                >
+                  <div className="relative">
+                    <input
+                      id="dateOfService"
+                      name="dateOfService"
+                      type="text"
+                      value="02/03/2023"
+                      onChange={handleInputChange}
+                      className="form-input pr-10"
+                      required
+                    />
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                      <CalendarIcon className="h-5 w-5 text-gray-400" />
+                    </div>
+                  </div>
+                </FormField>
+                
+                <FormField 
+                  label="Accident Date" 
+                  htmlFor="accidentDate" 
+                  validationState="success"
+                >
+                  <div className="relative">
+                    <input
+                      id="accidentDate"
+                      name="accidentDate"
+                      type="text"
+                      value="02/03/2023"
+                      onChange={handleInputChange}
+                      className="form-input pr-10"
+                    />
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                      <CalendarIcon className="h-5 w-5 text-gray-400" />
+                    </div>
+                  </div>
+                </FormField>
+              </div>
+              
+              <div className="form-row">
+                <FormField 
+                  label="Accident Location" 
+                  htmlFor="accidentLocation" 
+                  validationState="error"
+                >
+                  <input
+                    id="accidentLocation"
+                    name="accidentLocation"
+                    type="text"
+                    value={formData.accidentLocation}
+                    onChange={handleInputChange}
+                    className="form-input border-error"
+                    placeholder="Enter accident location"
+                  />
+                </FormField>
+                
+                <FormField 
+                  label="Police Report" 
+                  htmlFor="policeReport" 
+                >
+                  <div className="flex gap-2">
+                    <button 
+                      type="button" 
+                      className="bg-primary text-white px-4 py-2 rounded font-medium"
+                    >
+                      Yes
+                    </button>
+                    <button 
+                      type="button" 
+                      className="bg-gray-200 text-neutral-secondary px-4 py-2 rounded font-medium"
+                    >
+                      No
+                    </button>
+                  </div>
+                </FormField>
+              </div>
+            </SectionCard>
+            
+            <SectionCard title="Medical & Provider">
+              <div className="form-row">
+                <FormField 
+                  label="Chief Complaint" 
+                  htmlFor="chiefComplaint" 
+                  validationState="success"
+                >
+                  <input
+                    id="chiefComplaint"
+                    name="chiefComplaint"
+                    type="text"
+                    value="Fever and sore throat"
+                    className="form-input"
+                  />
+                </FormField>
+              </div>
+              
+              <div className="form-row">
+                <FormField 
+                  label="Upload Documents" 
+                  htmlFor="documents" 
+                >
+                  <div className="mt-2 flex justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
+                    <div className="space-y-1 text-center">
+                      <svg
+                        className="mx-auto h-12 w-12 text-gray-400"
+                        stroke="currentColor"
+                        fill="none"
+                        viewBox="0 0 48 48"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                          strokeWidth={2}
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      <div className="flex text-sm text-gray-600 justify-center">
+                        <label
+                          htmlFor="file-upload"
+                          className="relative cursor-pointer rounded-md bg-white font-medium text-primary focus-within:outline-none focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 hover:text-primary-dark"
+                        >
+                          <span>Upload files</span>
+                          <input
+                            id="file-upload"
+                            name="file-upload"
+                            type="file"
+                            multiple
+                            onChange={handleFileChange}
+                            className="sr-only"
+                          />
+                        </label>
+                        <p className="pl-1">or drag and drop</p>
+                      </div>
+                      <p className="text-xs text-gray-500">
+                        PNG, JPG, PDF up to 10MB each
+                      </p>
+                    </div>
+                  </div>
+                </FormField>
+              </div>
+              
               {files.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="mb-2 text-sm font-semibold text-gray-700">Uploaded Files</h3>
+                <div className="mt-4">
+                  <h3 className="text-sm font-medium text-neutral mb-2">Uploaded Files</h3>
                   <ul className="divide-y divide-gray-200 rounded border border-gray-200">
                     {files.map((file, index) => (
                       <li key={index} className="flex items-center justify-between py-3 pl-3 pr-4 text-sm">
@@ -275,7 +500,7 @@ export default function NewClaim() {
                           <button
                             type="button"
                             onClick={() => removeFile(index)}
-                            className="font-medium text-red-600 hover:text-red-500"
+                            className="font-medium text-error hover:text-error"
                           >
                             Remove
                           </button>
@@ -285,82 +510,95 @@ export default function NewClaim() {
                   </ul>
                 </div>
               )}
-
-              <div className="mt-8 flex justify-between">
-                <button
-                  type="button"
-                  onClick={prevStep}
-                  className="btn-secondary"
-                >
-                  Back
-                </button>
-                <button
-                  type="button"
-                  onClick={nextStep}
-                  className="btn-primary"
-                >
-                  Next: Review Submission
-                </button>
-              </div>
+            </SectionCard>
+            
+            <div className="mt-8 flex justify-between">
+              <button
+                type="button"
+                onClick={prevStep}
+                className="btn-secondary"
+              >
+                Back
+              </button>
+              <button
+                type="button"
+                onClick={nextStep}
+                className="btn-primary"
+              >
+                Next: Review Submission
+              </button>
             </div>
-          )}
+          </>
+        )}
 
-          {/* Step 3: Review and Submit */}
-          {currentStep === 3 && (
-            <div>
-              <h2 className="mb-4 text-xl font-semibold">Review Your Claim</h2>
-              <p className="mb-6 text-gray-600">
+        {/* Step 3: Review and Submit */}
+        {currentStep === 3 && (
+          <>
+            <div className="section-card">
+              <h2 className="text-xl font-semibold mb-6">Review Your Claim</h2>
+              <p className="mb-6 text-neutral-secondary">
                 Please review the information below before submitting your claim.
               </p>
 
-              <div className="mb-6 rounded-md border border-gray-200 bg-gray-50 p-4">
-                <h3 className="mb-3 text-lg font-medium text-gray-900">Claim Details</h3>
-                <dl className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
+              <div className="bg-gray-50 p-6 rounded-lg border border-gray-200 mb-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-medium text-lg">Claim Summary</h3>
+                  <StatusTag status="pending" icon={<SyncIcon className="h-3 w-3" />}>
+                    Draft
+                  </StatusTag>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <dt className="text-sm font-medium text-gray-500">Claim Type</dt>
-                    <dd className="mt-1 text-sm text-gray-900">{formData.claimType || "Not specified"}</dd>
+                    <h4 className="text-sm font-medium text-neutral-secondary mb-2">Policy & Member</h4>
+                    <div className="space-y-2">
+                      <div>
+                        <span className="text-sm text-neutral-secondary">Policy Number:</span>
+                        <p className="text-sm font-medium">{formData.policyNumber}</p>
+                      </div>
+                      <div>
+                        <span className="text-sm text-neutral-secondary">Policy Holder:</span>
+                        <p className="text-sm font-medium">{formData.policyHolderName}</p>
+                      </div>
+                      <div>
+                        <span className="text-sm text-neutral-secondary">ID Number:</span>
+                        <p className="text-sm font-medium">{formData.idNumber}</p>
+                      </div>
+                    </div>
                   </div>
+                  
                   <div>
-                    <dt className="text-sm font-medium text-gray-500">Policy Number</dt>
-                    <dd className="mt-1 text-sm text-gray-900">{formData.policyNumber || "Not specified"}</dd>
+                    <h4 className="text-sm font-medium text-neutral-secondary mb-2">Claim Details</h4>
+                    <div className="space-y-2">
+                      <div>
+                        <span className="text-sm text-neutral-secondary">Claim Type:</span>
+                        <p className="text-sm font-medium">{formData.claimType || "OPD Claim"}</p>
+                      </div>
+                      <div>
+                        <span className="text-sm text-neutral-secondary">Service Date:</span>
+                        <p className="text-sm font-medium">02/03/2023</p>
+                      </div>
+                      <div>
+                        <span className="text-sm text-neutral-secondary">Documents:</span>
+                        <p className="text-sm font-medium">{files.length} file(s) uploaded</p>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">Patient Name</dt>
-                    <dd className="mt-1 text-sm text-gray-900">{formData.patientName || "Not specified"}</dd>
+                </div>
+                
+                {files.length > 0 && (
+                  <div className="mt-6">
+                    <h4 className="text-sm font-medium text-neutral-secondary mb-2">Uploaded Documents</h4>
+                    <ul className="text-sm">
+                      {files.map((file, index) => (
+                        <li key={index} className="flex items-center gap-1">
+                          <PaperClipIcon className="h-4 w-4 text-neutral-secondary" />
+                          {file.name}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">Date of Service</dt>
-                    <dd className="mt-1 text-sm text-gray-900">{formData.dateOfService || "Not specified"}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">Provider Name</dt>
-                    <dd className="mt-1 text-sm text-gray-900">{formData.providerName || "Not specified"}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">Total Amount</dt>
-                    <dd className="mt-1 text-sm text-gray-900">
-                      {formData.totalAmount ? `$${formData.totalAmount}` : "Not specified"}
-                    </dd>
-                  </div>
-                  <div className="sm:col-span-2">
-                    <dt className="text-sm font-medium text-gray-500">Description</dt>
-                    <dd className="mt-1 text-sm text-gray-900">{formData.description || "No description provided"}</dd>
-                  </div>
-                  <div className="sm:col-span-2">
-                    <dt className="text-sm font-medium text-gray-500">Uploaded Documents</dt>
-                    <dd className="mt-1 text-sm text-gray-900">
-                      {files.length > 0 ? (
-                        <ul className="list-inside list-disc">
-                          {files.map((file, index) => (
-                            <li key={index}>{file.name}</li>
-                          ))}
-                        </ul>
-                      ) : (
-                        "No documents uploaded"
-                      )}
-                    </dd>
-                  </div>
-                </dl>
+                )}
               </div>
 
               <div className="mb-6">
@@ -372,15 +610,15 @@ export default function NewClaim() {
                       type="checkbox"
                       checked={formData.acceptTerms}
                       onChange={handleInputChange}
-                      className="h-4 w-4 rounded border-gray-300 text-bgla-blue focus:ring-bgla-blue"
+                      className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                       required
                     />
                   </div>
                   <div className="ml-3 text-sm">
-                    <label htmlFor="acceptTerms" className="font-medium text-gray-700">
+                    <label htmlFor="acceptTerms" className="font-medium text-neutral">
                       I confirm that all information provided is accurate and complete
                     </label>
-                    <p className="text-gray-500">
+                    <p className="text-neutral-secondary">
                       By submitting this claim, I certify that the information provided is true and accurate to the best of my knowledge.
                     </p>
                   </div>
@@ -404,9 +642,9 @@ export default function NewClaim() {
                 </button>
               </div>
             </div>
-          )}
-        </form>
-      </div>
+          </>
+        )}
+      </form>
     </AppLayout>
   );
 }
