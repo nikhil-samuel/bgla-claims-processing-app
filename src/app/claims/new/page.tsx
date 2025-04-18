@@ -17,8 +17,22 @@ import {
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 
+// Define types for field recommendations
+type Recommendation = {
+  value: string;
+  confidence: number;
+};
+
+// Define the allowed field name keys
+type FieldName = 'policyHolder' | 'diagnosis';
+
+// Define the type for the fieldRecommendations object
+type FieldRecommendations = {
+  [key in FieldName]: Recommendation[];
+};
+
 // Field recommendations with confidence
-const fieldRecommendations = {
+const fieldRecommendations: FieldRecommendations = {
   "policyHolder": [
     { value: "John Smith", confidence: 93 },
     { value: "Jon Smith", confidence: 85 },
@@ -115,9 +129,15 @@ export default function NewClaim() {
     router.push("/claims/submission-successful");
   };
 
+  // Type guard to check if fieldName is a valid key in fieldRecommendations
+  const isValidFieldName = (name: string): name is FieldName => {
+    return name === 'policyHolder' || name === 'diagnosis';
+  };
+
   // Component for displaying field recommendations
   const FieldRecommendations = ({ fieldName }: { fieldName: string }) => {
-    if (!fieldRecommendations[fieldName]) return null;
+    // Only proceed if fieldName is a valid key in fieldRecommendations
+    if (!isValidFieldName(fieldName)) return null;
     
     return (
       <div className="mt-1 text-xs">
