@@ -856,9 +856,9 @@ export default function NewClaim() {
       </div>
 
       <form onSubmit={handleSubmit}>
-        <div className="flex flex-1">
-          {/* Main content area */}
-          <div className={`flex-1 ${showDocumentPanel ? 'mr-4' : ''}`}>
+        <div className="flex flex-1 justify-center">
+          {/* Main content area with 60% width */}
+          <div className={`w-3/5 ${showDocumentPanel ? 'mr-4' : ''}`}>
             <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
               {renderTabContent()}
             </div>
@@ -866,7 +866,7 @@ export default function NewClaim() {
           
           {/* Document panel - shown when a field or document is selected */}
           {showDocumentPanel && (
-            <div className="w-1/2 bg-white border border-gray-200 rounded-lg shadow-sm p-4 transition-all duration-300 ease-in-out transform">
+            <div className="w-2/5 bg-white border border-gray-200 rounded-lg shadow-sm p-4 transition-all duration-300 ease-in-out transform">
               <div className="flex justify-between items-center mb-4">
                 <button 
                   onClick={closeDocumentPanel}
@@ -924,16 +924,18 @@ export default function NewClaim() {
           )}
         </div>
         
-        <div className="mt-8 flex justify-between">
-          <Link href="/claims" className="btn-secondary">
-            Cancel
-          </Link>
-          <button
-            type="submit"
-            className="btn-primary"
-          >
-            Submit Claim
-          </button>
+        <div className="mt-8 flex justify-center">
+          <div className="w-3/5 flex justify-between">
+            <Link href="/claims" className="btn-secondary">
+              Cancel
+            </Link>
+            <button
+              type="submit"
+              className="btn-primary"
+            >
+              Submit Claim
+            </button>
+          </div>
         </div>
       </form>
     </AppLayout>
