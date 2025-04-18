@@ -882,9 +882,9 @@ export default function ClaimDetails({ params }: { params: { id: string } }) {
           </div>
         </div>
 
-        <div className="flex flex-1">
-          {/* Main content area */}
-          <div className={`flex-1 ${showDocumentPanel ? 'mr-4' : ''}`}>
+        <div className="flex flex-1 justify-center">
+          {/* Main content area with 60% width */}
+          <div className={`w-3/5 ${showDocumentPanel ? 'mr-4' : ''}`}>
             <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
               {renderTabContent()}
             </div>
@@ -892,7 +892,7 @@ export default function ClaimDetails({ params }: { params: { id: string } }) {
           
           {/* Document panel - shown when a document is selected */}
           {showDocumentPanel && (
-            <div className="w-1/2 bg-white border border-gray-200 rounded-lg shadow-sm p-4">
+            <div className="w-2/5 bg-white border border-gray-200 rounded-lg shadow-sm p-4">
               <div className="flex justify-between items-center mb-4">
                 <button 
                   onClick={closeDocumentPanel}
