@@ -14,7 +14,7 @@ type I18nContextType = {
 
 // Create the context with default values
 const I18nContext = createContext<I18nContextType>({
-  language: 'en',
+  language: 'es',
   setLanguage: () => {},
   t: (key) => key,
 });
@@ -45,12 +45,15 @@ const translations: Record<Language, Record<string, string>> = {
     'claims.amount': 'Amount',
     'claims.status': 'Status',
     'claims.view': 'View',
+    'claims.step': 'Step',
+    'claims.of': 'of',
     
     // Status Tags
     'status.pending': 'Pending',
     'status.approved': 'Approved',
     'status.rejected': 'Rejected',
     'status.processing': 'Processing',
+    'status.in_clearinghouse': 'In Clearinghouse',
     
     // Claim Details
     'claim.policy': 'Policy & Member',
@@ -59,6 +62,10 @@ const translations: Record<Language, Record<string, string>> = {
     'claim.reimbursement': 'Reimbursement',
     'claim.documents': 'Documents',
     'claim.additionalInfo': 'Additional Member Information',
+    'claim.bankInfo': 'Bank Information',
+    'claim.accidentInfo': 'Accident Information',
+    'claim.hospitalization': 'Hospitalization',
+    'claim.otherInsurance': 'Other Insurance',
     
     // Form Fields
     'form.policyNumber': 'Policy Number',
@@ -66,7 +73,7 @@ const translations: Record<Language, Record<string, string>> = {
     'form.idNumber': 'ID / Passport Number',
     'form.policyEffective': 'Policy Effective Date',
     'form.planName': 'Plan Name',
-    'form.otherInsurance': 'Has Other Insurance',
+    'form.hasOtherInsurance': 'Has Other Insurance',
     'form.otherCompany': 'Other Insurance Company',
     'form.otherPolicy': 'Other Policy Number',
     'form.gender': 'Gender',
@@ -75,6 +82,13 @@ const translations: Record<Language, Record<string, string>> = {
     'form.male': 'Male',
     'form.female': 'Female',
     'form.other': 'Other',
+    'form.accountHolder': 'Account Holder',
+    'form.accountType': 'Account Type',
+    'form.accountNumber': 'Account Number',
+    'form.swiftCode': 'SWIFT Code',
+    'form.bankName': 'Bank Name',
+    'form.bankCity': 'Bank City',
+    'form.currency': 'Currency',
     
     // Document Related
     'documents.title': 'Documents',
@@ -108,6 +122,17 @@ const translations: Record<Language, Record<string, string>> = {
     'action.cancel': 'Cancel',
     'action.close': 'Close',
     'action.confirm': 'Confirm',
+    
+    // Ecuador specific
+    'ecuador.cedula': 'Cédula',
+    'ecuador.province': 'Province',
+    'ecuador.canton': 'Canton',
+    'ecuador.reimbursement': 'Reimbursement',
+    'ecuador.provider.type': 'Provider Type',
+    'ecuador.is_preventive': 'Is Preventive Care',
+    'ecuador.is_accident': 'Is Accident',
+    'ecuador.event_location': 'Event Location',
+    'ecuador.event_country': 'Event Country',
   },
   es: {
     // Dashboard
@@ -121,7 +146,7 @@ const translations: Record<Language, Record<string, string>> = {
     'dashboard.viewAll': 'Ver todos',
     'dashboard.recentClaims': 'Reclamos Recientes',
     'dashboard.quickActions': 'Acciones Rápidas',
-    'dashboard.action.newClaim': 'Presentar Nuevo Reclamo',
+    'dashboard.action.newClaim': 'Enviar Nuevo Reclamo',
     'dashboard.action.uploadDocuments': 'Subir Documentos',
     'dashboard.action.contactSupport': 'Contactar Soporte',
     
@@ -133,12 +158,15 @@ const translations: Record<Language, Record<string, string>> = {
     'claims.amount': 'Monto',
     'claims.status': 'Estado',
     'claims.view': 'Ver',
+    'claims.step': 'Paso',
+    'claims.of': 'de',
     
     // Status Tags
     'status.pending': 'Pendiente',
     'status.approved': 'Aprobado',
     'status.rejected': 'Rechazado',
     'status.processing': 'Procesando',
+    'status.in_clearinghouse': 'En Centro de Procesamiento',
     
     // Claim Details
     'claim.policy': 'Póliza y Miembro',
@@ -147,14 +175,18 @@ const translations: Record<Language, Record<string, string>> = {
     'claim.reimbursement': 'Reembolso',
     'claim.documents': 'Documentos',
     'claim.additionalInfo': 'Información Adicional del Miembro',
+    'claim.bankInfo': 'Información Bancaria',
+    'claim.accidentInfo': 'Información del Accidente',
+    'claim.hospitalization': 'Hospitalización',
+    'claim.otherInsurance': 'Otro Seguro',
     
     // Form Fields
     'form.policyNumber': 'Número de Póliza',
     'form.policyHolder': 'Nombre del Titular de la Póliza',
-    'form.idNumber': 'Número de ID / Pasaporte',
+    'form.idNumber': 'Cédula / Número de Pasaporte',
     'form.policyEffective': 'Fecha Efectiva de la Póliza',
     'form.planName': 'Nombre del Plan',
-    'form.otherInsurance': 'Tiene Otro Seguro',
+    'form.hasOtherInsurance': 'Tiene Otro Seguro',
     'form.otherCompany': 'Otra Compañía de Seguros',
     'form.otherPolicy': 'Otro Número de Póliza',
     'form.gender': 'Género',
@@ -163,6 +195,13 @@ const translations: Record<Language, Record<string, string>> = {
     'form.male': 'Masculino',
     'form.female': 'Femenino',
     'form.other': 'Otro',
+    'form.accountHolder': 'Titular de la Cuenta',
+    'form.accountType': 'Tipo de Cuenta',
+    'form.accountNumber': 'Número de Cuenta',
+    'form.swiftCode': 'Código SWIFT',
+    'form.bankName': 'Nombre del Banco',
+    'form.bankCity': 'Ciudad del Banco',
+    'form.currency': 'Moneda',
     
     // Document Related
     'documents.title': 'Documentos',
@@ -196,13 +235,24 @@ const translations: Record<Language, Record<string, string>> = {
     'action.cancel': 'Cancelar',
     'action.close': 'Cerrar',
     'action.confirm': 'Confirmar',
+    
+    // Ecuador specific
+    'ecuador.cedula': 'Cédula',
+    'ecuador.province': 'Provincia',
+    'ecuador.canton': 'Cantón',
+    'ecuador.reimbursement': 'Reembolso',
+    'ecuador.provider.type': 'Tipo de Proveedor',
+    'ecuador.is_preventive': 'Es Cuidado Preventivo',
+    'ecuador.is_accident': 'Es Accidente',
+    'ecuador.event_location': 'Lugar del Evento',
+    'ecuador.event_country': 'País del Evento',
   }
 };
 
 // Provider component
 export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Default to English, but use stored preference if available
-  const [language, setLanguage] = useState<Language>('en');
+  // Default to Spanish for Ecuador focus
+  const [language, setLanguage] = useState<Language>('es');
 
   // Load saved language preference on mount
   useEffect(() => {
