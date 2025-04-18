@@ -8,7 +8,8 @@ import {
   ClockIcon, 
   ExclamationTriangleIcon,
   BanknotesIcon,
-  DocumentDuplicateIcon
+  DocumentDuplicateIcon,
+  MapPinIcon
 } from "@heroicons/react/24/outline";
 
 interface ClaimCardProps {
@@ -22,6 +23,7 @@ interface ClaimCardProps {
   isUrgent?: boolean;
   isHighValue?: boolean;
   hasDuplicateWarning?: boolean;
+  province?: string;
   href: string;
 }
 
@@ -36,6 +38,7 @@ export default function ClaimCard({
   isUrgent = false,
   isHighValue = false,
   hasDuplicateWarning = false,
+  province,
   href,
 }: ClaimCardProps) {
   const { t } = useI18n();
@@ -92,19 +95,19 @@ export default function ClaimCard({
           {isUrgent && (
             <div className="bg-error text-white px-2 py-0.5 rounded-full text-xs flex items-center">
               <ClockIcon className="h-3 w-3 mr-1" />
-              Urgent
+              Urgente
             </div>
           )}
           {isHighValue && (
             <div className="bg-success text-white px-2 py-0.5 rounded-full text-xs flex items-center">
               <BanknotesIcon className="h-3 w-3 mr-1" />
-              High Value
+              Alto Valor
             </div>
           )}
           {hasDuplicateWarning && (
             <div className="bg-warning text-white px-2 py-0.5 rounded-full text-xs flex items-center">
               <DocumentDuplicateIcon className="h-3 w-3 mr-1" />
-              Duplicate
+              Duplicado
             </div>
           )}
         </div>
@@ -113,6 +116,12 @@ export default function ClaimCard({
           <div>
             <h3 className="font-medium text-neutral">{patientName}</h3>
             <p className="text-xs text-neutral-secondary">{policyNumber}</p>
+            {province && (
+              <div className="flex items-center text-xs text-neutral-secondary mt-1">
+                <MapPinIcon className="h-3 w-3 mr-1" />
+                {province}
+              </div>
+            )}
           </div>
           <StatusTag status={statusConfig.type} icon={statusConfig.icon}>
             {statusConfig.label}
@@ -121,11 +130,11 @@ export default function ClaimCard({
         
         <div className="border-t border-gray-100 pt-2 mt-2 flex justify-between">
           <div>
-            <p className="text-xs text-neutral-secondary">Type</p>
+            <p className="text-xs text-neutral-secondary">Tipo</p>
             <p className="text-sm text-neutral-secondary">{claimType}</p>
           </div>
           <div className="text-right">
-            <p className="text-xs text-neutral-secondary">Amount</p>
+            <p className="text-xs text-neutral-secondary">Monto</p>
             <p className="text-sm font-medium text-neutral">{amount}</p>
           </div>
         </div>
