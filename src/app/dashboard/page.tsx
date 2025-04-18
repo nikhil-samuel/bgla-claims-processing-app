@@ -54,76 +54,89 @@ export default function Dashboard() {
     },
   ];
 
+  // Ecuador-specific claims data
   const recentClaims = [
     {
-      id: "CL-2025-1234",
-      patientName: "Somchai Jaidee",
-      policyNumber: "THB9876543",
-      type: "Medical",
-      submittedDate: "April 10, 2025",
+      id: "REQ-2025-12345",
+      systemId: "SYS-REQ-001234",
+      patientName: "Carlos Hernández",
+      policyNumber: "AW62-88-000111-ECU",
+      type: "Médico",
+      submittedDate: "10 de abril, 2025",
       amount: "$1,250.00",
       status: "pending",
-      slaRemaining: "2 days",
+      slaRemaining: "2 días",
+      province: "Pichincha"
     },
     {
-      id: "CL-2025-1233",
-      patientName: "Maria Gonzalez",
-      policyNumber: "THB1234567",
+      id: "REQ-2025-12344",
+      systemId: "SYS-REQ-001233",
+      patientName: "María Gonzalez",
+      policyNumber: "AW62-88-000222-ECU",
       type: "Dental",
-      submittedDate: "April 8, 2025",
+      submittedDate: "8 de abril, 2025",
       amount: "$750.00",
       status: "approved",
-      slaRemaining: "Completed",
+      slaRemaining: "Completado",
+      province: "Guayas"
     },
     {
-      id: "CL-2025-1232",
-      patientName: "Liam O'Sullivan",
-      policyNumber: "THB2345678",
-      type: "Vision",
-      submittedDate: "April 5, 2025",
+      id: "REQ-2025-12343",
+      systemId: "SYS-REQ-001232",
+      patientName: "Luis Suárez",
+      policyNumber: "AW62-88-000333-ECU",
+      type: "Visión",
+      submittedDate: "5 de abril, 2025",
       amount: "$350.00",
       status: "rejected",
-      slaRemaining: "Completed",
+      slaRemaining: "Completado",
+      province: "Azuay"
     },
   ];
 
   // Modified pendingClaims to include SLA and high-value indicators
   const pendingClaims = [
     {
-      id: "CL-2025-1231",
-      patientName: "Priya Singh",
-      policyNumber: "THB4567890",
-      type: "OPD Claim",
+      id: "REQ-2025-12342",
+      systemId: "SYS-REQ-001231",
+      patientName: "Patricia Ramírez",
+      policyNumber: "AW62-88-000444-ECU",
+      type: "Consulta Externa",
       amount: "$850.00",
       status: "pending",
-      slaRemaining: "1 day",
+      slaRemaining: "1 día",
       isUrgent: true,
       isHighValue: false,
       hasDuplicateWarning: false,
+      province: "Pichincha"
     },
     {
-      id: "CL-2025-1230",
-      patientName: "David Brown",
-      policyNumber: "THB5678901",
-      type: "OPD Claim",
+      id: "REQ-2025-12341",
+      systemId: "SYS-REQ-001230",
+      patientName: "David Moreno",
+      policyNumber: "AW62-88-000555-ECU",
+      type: "Consulta Externa",
       amount: "$300.00",
       status: "pending",
-      slaRemaining: "3 days",
+      slaRemaining: "3 días",
       isUrgent: false,
       isHighValue: false,
       hasDuplicateWarning: true,
+      province: "Manabí"
     },
     {
-      id: "CL-2025-1229",
-      patientName: "Chen Wei",
-      policyNumber: "THB6789012",
-      type: "OPD Claim",
+      id: "REQ-2025-12340",
+      systemId: "SYS-REQ-001229",
+      patientName: "Ana Valencia",
+      policyNumber: "AW62-88-000666-ECU",
+      type: "Hospitalización",
       amount: "$3,600.00",
       status: "pending",
-      slaRemaining: "2 days",
+      slaRemaining: "2 días",
       isUrgent: false,
       isHighValue: true,
       hasDuplicateWarning: false,
+      province: "Guayas"
     },
   ];
 
@@ -152,7 +165,7 @@ export default function Dashboard() {
     <AppLayout>
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-neutral">{t("dashboard.title")}</h1>
-        <p className="text-neutral-secondary">{t("dashboard.welcome")}, John Smith</p>
+        <p className="text-neutral-secondary">{t("dashboard.welcome")}, Juan Pérez</p>
       </div>
       
       {/* Stats Cards */}
@@ -196,7 +209,7 @@ export default function Dashboard() {
                 onClick={() => setSorting("value")}
               >
                 <ArrowTrendingUpIcon className="h-4 w-4" />
-                Value
+                Valor
               </Button>
             </div>
             <Link href="/claims" className="text-sm text-primary hover:text-primary-dark flex items-center">
@@ -220,6 +233,7 @@ export default function Dashboard() {
               isUrgent={claim.isUrgent}
               isHighValue={claim.isHighValue}
               hasDuplicateWarning={claim.hasDuplicateWarning}
+              province={claim.province}
               href={`/claims/${claim.id}`}
             />
           ))}
@@ -246,6 +260,9 @@ export default function Dashboard() {
                   {t("claims.patient")}
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-secondary uppercase tracking-wider">
+                  Provincia
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-secondary uppercase tracking-wider">
                   {t("claims.type")}
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-secondary uppercase tracking-wider">
@@ -267,10 +284,14 @@ export default function Dashboard() {
                 <tr key={claim.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral">
                     {claim.id}
+                    <div className="text-xs text-neutral-secondary">{claim.systemId}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral">
                     {claim.patientName}
                     <div className="text-xs text-neutral-secondary">{claim.policyNumber}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-secondary">
+                    {claim.province}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-secondary">
                     {claim.type}
@@ -310,15 +331,15 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Link href="/claims/new" className="card hover:bg-gray-50 transition-colors hover:shadow-md">
             <h3 className="text-md font-medium text-neutral mb-1">{t("dashboard.action.newClaim")}</h3>
-            <p className="text-sm text-neutral-secondary">Start the process for a new insurance claim</p>
+            <p className="text-sm text-neutral-secondary">Inicie el proceso para un nuevo reclamo de seguro</p>
           </Link>
           <Link href="/documents/upload" className="card hover:bg-gray-50 transition-colors hover:shadow-md">
             <h3 className="text-md font-medium text-neutral mb-1">{t("dashboard.action.uploadDocuments")}</h3>
-            <p className="text-sm text-neutral-secondary">Upload supporting documents for your claims</p>
+            <p className="text-sm text-neutral-secondary">Suba documentos de respaldo para sus reclamos</p>
           </Link>
           <Link href="/contact" className="card hover:bg-gray-50 transition-colors hover:shadow-md">
             <h3 className="text-md font-medium text-neutral mb-1">{t("dashboard.action.contactSupport")}</h3>
-            <p className="text-sm text-neutral-secondary">Get help with your claims or account</p>
+            <p className="text-sm text-neutral-secondary">Obtenga ayuda con sus reclamos o cuenta</p>
           </Link>
         </div>
       </div>
